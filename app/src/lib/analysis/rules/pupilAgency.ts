@@ -40,3 +40,42 @@ export const pupilAgencyRule: GapRule = ({ ctx, cycle }) => {
     }
   ];
 };
+
+// Structural-absence companion: a pedagogy/inclusion/preparation section
+// exists, but the wording contains neither explicit teacher-control
+// language nor explicit pupil-choice language — the text is simply silent
+// on who decides. This is not evidence that pupils lack agency (many
+// syllabi describe activities without spelling out who chooses what), so it
+// is reported as an absence of evidence, at medium confidence, not as a
+// confirmed gap.
+export const pupilAgencyAbsenceRule: GapRule = ({ ctx }) => {
+  const sections = ctx.sectionsOf(["pedagogy", "inclusion", "preparation"]);
+  if (sections.length === 0) return [];
+
+  const combined = sections.map((s) => s.text).join("\n");
+  if (TEACHER_CONTROL.test(combined) || PUPIL_CHOICE.test(combined)) return [];
+  if (!combined.trim()) return [];
+
+  return [
+    {
+      category: "pupil_agency",
+      priority: "medium",
+      confidence: "medium",
+      location: locationLabel(sections),
+      current_excerpt: excerpt(combined),
+      observed_gap:
+        "Evidence was not found in the reviewed text for who decides the topic, roles or approach — the wording does not clearly describe either teacher control or pupil choice.",
+      competence_ids: ["2.3", "3.3", "4.2", "4.3"],
+      suggested_wording:
+        "Make explicit who chooses what: for each activity, name whether the teacher sets it or pupils have a choice, even a bounded one.",
+      implementation_example:
+        "Add one sentence per activity clarifying the decision: e.g. 'the teacher provides the topic; pupils choose which example to investigate within it'.",
+      assessment_evidence:
+        "A short note (in the plan or a pupil log) of who made each key decision during the activity.",
+      european_schools_context: getContextNote("pupil_agency"),
+      rule_basis: [
+        "Rule: pupil_agency (structural absence) — the pedagogy/inclusion/preparation sections exist but matched neither teacher-control nor pupil-choice wording; absence of evidence is not evidence of absence."
+      ]
+    }
+  ];
+};

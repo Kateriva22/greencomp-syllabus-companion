@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Suggestion } from "../types/domain";
 import { useSession } from "../state/sessionStore";
+import { effectiveWording } from "../lib/suggestionWording";
 
 const CATEGORY_LABEL: Record<string, string> = {
   values_and_rationale: "Values and rationale",
@@ -16,11 +17,19 @@ const CATEGORY_LABEL: Record<string, string> = {
 export default function SuggestionCard({ suggestion }: { suggestion: Suggestion }) {
   const { dispatch } = useSession();
   const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState(suggestion.edited_text ?? suggestion.suggested_wording);
+  const [draft, setDraft] = useState(effectiveWording(suggestion));
 
   function decide(decision: Suggestion["teacher_decision"], editedText?: string) {
     dispatch({ type: "SET_DECISION", id: suggestion.id, decision, editedText });
     setIsEditing(false);
+  }
+
+  function startEditing() {
+    // Always start from the wording currently in force, never from
+    // whatever was left in the textarea by a previous edit session that
+    // was since abandoned (e.g. Edit -> Accept -> Edit again).
+    setDraft(effectiveWording(suggestion));
+    setIsEditing(true);
   }
 
   return (
@@ -56,7 +65,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
               onChange={(e) => setDraft(e.target.value)}
             />
           ) : (
-            suggestion.edited_text ?? suggestion.suggested_wording
+            effectiveWording(suggestion)
           )}
         </dd>
 
@@ -92,7 +101,7 @@ export default function SuggestionCard({ suggestion }: { suggestion: Suggestion 
             <button className="button" onClick={() => decide("accepted")}>
               Accept
             </button>
-            <button className="button secondary" onClick={() => setIsEditing(true)}>
+            <button className="button secondary" onClick={startEditing}>
               Edit
             </button>
             <button className="button danger" onClick={() => decide("rejected")}>

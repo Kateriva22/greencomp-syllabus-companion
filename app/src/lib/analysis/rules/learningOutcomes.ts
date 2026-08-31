@@ -2,7 +2,10 @@ import type { GapRule } from "../types";
 import { excerpt } from "../context";
 import { getContextNote } from "../../../data/contextPack";
 
-const BULLET = /^[-*]\s+(.*)$/;
+// Matches "- ", "* ", "1. " and "1) " list markers — a DOCX <ol> is
+// rendered by htmlToStructuredText as numbered lines ("1. …"), not
+// markdown dashes, so this must recognise both list styles.
+const BULLET = /^(?:[-*]|\d+[.)])\s+(.*)$/;
 const LOW_ORDER_VERB = /^(identify|describe|name|list|record|search|find|state|recall)\b/i;
 const HIGH_ORDER_VERB = /(evaluate|compare|propose|decide|justify|design|reflect|frame|question|debate|argue|adapt)/i;
 
@@ -24,7 +27,11 @@ export const learningOutcomesRule: GapRule = ({ ctx }) => {
   const lowOrderCount = bullets.filter((b) => LOW_ORDER_VERB.test(b)).length;
   const highOrderCount = bullets.filter((b) => HIGH_ORDER_VERB.test(b)).length;
 
-  if (highOrderCount > 0 || lowOrderCount < 2) return [];
+  // A single higher-order outcome among many recall outcomes is not enough
+  // to call the set balanced — require recall outcomes to outnumber
+  // higher-order ones by more than 2:1 before treating it as a genuine gap,
+  // so the finding isn't suppressed by one incidental keyword.
+  if (lowOrderCount < 2 || lowOrderCount <= highOrderCount * 2) return [];
 
   return [
     {
@@ -44,7 +51,7 @@ export const learningOutcomesRule: GapRule = ({ ctx }) => {
         "A short written or spoken response for each added outcome (a question the pupil framed, a judgement about a source, a choice between two options with a reason, a reflection sentence).",
       european_schools_context: getContextNote("learning_outcomes"),
       rule_basis: [
-        `Rule: learning_outcomes — ${lowOrderCount} recall/task-completion outcome(s) found and 0 outcomes used a higher-order verb (evaluate, compare, propose, decide, justify, design, reflect, frame).`
+        `Rule: learning_outcomes — ${lowOrderCount} recall/task-completion outcome(s) found against only ${highOrderCount} using a higher-order verb (evaluate, compare, propose, decide, justify, design, reflect, frame).`
       ]
     }
   ];

@@ -58,11 +58,18 @@ function reducer(state: SessionState, action: Action): SessionState {
       return { ...state, error: action.error };
     case "SET_DECISION": {
       if (!state.result) return state;
-      const suggestions = state.result.suggestions.map((s) =>
-        s.id === action.id
-          ? { ...s, teacher_decision: action.decision, edited_text: action.editedText ?? s.edited_text }
-          : s
-      );
+      const suggestions = state.result.suggestions.map((s) => {
+        if (s.id !== action.id) return s;
+        // edited_text is only meaningful while the decision is "edited".
+        // Moving to "accepted" or "rejected" abandons any draft wording, so
+        // it must be cleared here — otherwise a stale edited_text could
+        // linger next to a non-"edited" decision and be read inconsistently
+        // by the UI, the JSON export and the printable HTML export (each of
+        // which would then have to independently guess whether it still
+        // applies).
+        const edited_text = action.decision === "edited" ? action.editedText ?? s.edited_text : undefined;
+        return { ...s, teacher_decision: action.decision, edited_text };
+      });
       return { ...state, result: { ...state.result, suggestions } };
     }
     case "CLEAR_SESSION":

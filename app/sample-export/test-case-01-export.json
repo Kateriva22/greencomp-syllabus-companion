@@ -70,13 +70,13 @@
     },
     {
       "competence_id": "3.2",
-      "score": 1,
-      "evidence": "Pupils encounter messages about climate change, waste and responsible behaviour in their daily lives. This unit introduces practical environmental actions that can be taken at scho…"
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
     },
     {
       "competence_id": "3.3",
       "score": 1,
-      "evidence": "The unit should include examples from at least three European countries. Where possible, pupils should compare school routines and learn key environmental vocabulary used by classm…"
+      "evidence": "4 European examples In groups, search selected websites for one school or city initiative and record facts. Research notes"
     },
     {
       "competence_id": "4.1",
@@ -147,7 +147,7 @@
       "priority": "critical",
       "confidence": "high",
       "location": "7. Assessment",
-      "current_excerpt": "Component | Weight | Main criteria Participation | 20% | Attention, task completion and cooperation Knowledge quiz | 30% | Correct use of vocabulary and factual accuracy Poster and…",
+      "current_excerpt": "Participation | 20% | Attention, task completion and cooperation — Knowledge quiz | 30% | Correct use of vocabulary and factual accuracy — Poster and presentation | 50% | Accurate…",
       "observed_gap": "Assessment criteria reward attention, recall, cooperation, neatness and presentation. No criterion rewards GreenComp reasoning: inquiry, evidence use, weighing alternatives, collective action or reflection.",
       "competence_ids": [
         "2.1",
@@ -160,7 +160,7 @@
       "assessment_evidence": "A simple rubric or checklist covering inquiry quality, evidence use, decision-making and reflection, applied to the group's portfolio or presentation.",
       "european_schools_context": "Assessment should remain competence-based and evidence-observable, in line with the public context pack's support for competence-based learning and assessment; this does not replace any official assessment regulation.",
       "rule_basis": [
-        "Rule: assessment_alignment — assessment criteria matched recall/compliance/neatness wording without matching any inquiry, evidence, alternatives, decision, reflection or collective-action wording."
+        "Rule: assessment_alignment — 3 of 3 assessment criteria matched recall/compliance/neatness wording, against only 0 matching inquiry, evidence, alternatives, decision, reflection or collective-action wording."
       ],
       "id": "SUG-03",
       "teacher_decision": "pending"
@@ -183,7 +183,7 @@
       "assessment_evidence": "A short written or spoken response for each added outcome (a question the pupil framed, a judgement about a source, a choice between two options with a reason, a reflection sentence).",
       "european_schools_context": "Outcomes remain the subject's own; this suggestion only makes existing GreenComp-relevant reasoning observable.",
       "rule_basis": [
-        "Rule: learning_outcomes — 4 recall/task-completion outcome(s) found and 0 outcomes used a higher-order verb (evaluate, compare, propose, decide, justify, design, reflect, frame)."
+        "Rule: learning_outcomes — 4 recall/task-completion outcome(s) found against only 0 using a higher-order verb (evaluate, compare, propose, decide, justify, design, reflect, frame)."
       ],
       "id": "SUG-04",
       "teacher_decision": "pending"
@@ -283,6 +283,7 @@
   ],
   "limitations": [
     "This is a deterministic, rule-based Phase 1 prototype, not an AI reading of the document — it matches transparent patterns, not meaning.",
+    "Phase 1 analysis rules are English-only. A document in French, German or another language will not be reliably analysed — structure recognition and suggestions may be sparse, missing, or triggered only by incidental English words.",
     "GreenComp is non-prescriptive: not every competence is expected in every syllabus, and an absent score is not a deficiency.",
     "Suggestions are starting points for the teacher's own judgement, not an official or compliance verdict.",
     "Local/institutional requirements and the teacher's professional judgement always take precedence over these suggestions."

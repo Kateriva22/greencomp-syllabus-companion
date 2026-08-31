@@ -42,7 +42,12 @@ const COMPETENCE_PATTERNS: Record<string, CompetencePattern> = {
     purposeful: /scenario|plausible future|preferred future|imagine (a|the) future/i
   },
   "3.2": {
-    mention: /\badapt\b|\bchange\b|uncertain/i,
+    // Deliberately does NOT match a bare "change" — "climate change" is the
+    // single most common phrase in any sustainability syllabus and has
+    // nothing to do with the Adaptability competence (responding to
+    // feedback/uncertainty/limits). Only "adapt(...)" or "change" in an
+    // explicit response/uncertainty context counts as even a mention.
+    mention: /\badapt(s|ed|ing|ability|ive)?\b|respond(s|ed|ing)? to (feedback|change|uncertainty)|cope with (change|uncertainty)|\buncertain(ty)?\b/i,
     purposeful: /respond to feedback|revise (the )?plan|adjust (the )?(plan|approach)/i
   },
   "3.3": {
@@ -65,18 +70,28 @@ const COMPETENCE_PATTERNS: Record<string, CompetencePattern> = {
 
 const SCORING_SECTION_KINDS: SectionKind[] = ["outcomes", "sequence", "assessment"];
 
+// A section's table rows (e.g. the learning-sequence or assessment table)
+// carry real content that must count as evidence too — the sequence and
+// assessment sections in particular are almost always tables, so omitting
+// tableRows here would make coverage scoring blind to most of what those
+// two section kinds actually say.
+function sectionBodyText(s: DocumentSection): string {
+  const rowText = s.tableRows?.map((r) => r.join(" ")).join("\n") ?? "";
+  return [s.text, rowText].filter(Boolean).join("\n");
+}
+
 export function computeCoverage(sections: DocumentSection[]): CoverageEntry[] {
   // Used only to test *whether* a competence is mentioned anywhere,
   // including headings (a heading like "European dimension" is itself
   // relevant signal for 3.3).
-  const detectionText = sections.map((s) => `${s.heading}\n${s.text}`).join("\n\n");
+  const detectionText = sections.map((s) => `${s.heading}\n${sectionBodyText(s)}`).join("\n\n");
   // Used to pick the *quoted* evidence line. Front-matter/title sections
   // ("other") are excluded and headings are left out so a document title
   // that happens to contain a keyword (e.g. "Sustainable School") is never
   // quoted as if it were supporting evidence from the body text.
   const evidenceText = sections
     .filter((s) => s.kind !== "other")
-    .map((s) => s.text)
+    .map((s) => sectionBodyText(s))
     .join("\n\n");
   const scoringSections = sections.filter((s) => SCORING_SECTION_KINDS.includes(s.kind));
 
@@ -91,7 +106,7 @@ export function computeCoverage(sections: DocumentSection[]): CoverageEntry[] {
     }
 
     const purposefulSectionCount = scoringSections.filter((s) =>
-      pattern.purposeful.test(`${s.heading}\n${s.text}`)
+      pattern.purposeful.test(`${s.heading}\n${sectionBodyText(s)}`)
     ).length;
 
     if (purposefulSectionCount >= 2) {

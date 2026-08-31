@@ -23,6 +23,7 @@ describe("App", () => {
     renderApp();
     await userEvent.click(screen.getByRole("button", { name: "Start a review" }));
     expect(screen.getByLabelText("Subject")).toBeInTheDocument();
+    expect(screen.getByText(/Phase 1 analysis rules are English-only/)).toBeInTheDocument();
 
     await userEvent.type(
       screen.getByLabelText(/Or paste the syllabus text/),

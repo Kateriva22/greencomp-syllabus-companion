@@ -5,21 +5,33 @@ import { detectStrengths } from "./strengths";
 import { computeCoverage } from "./coverage";
 import { valuesRationaleRule } from "./rules/valuesRationale";
 import { learningOutcomesRule } from "./rules/learningOutcomes";
-import { pupilAgencyRule } from "./rules/pupilAgency";
-import { systemsInquiryRule } from "./rules/systemsInquiry";
-import { criticalFuturesRule } from "./rules/criticalFutures";
-import { authenticActionRule } from "./rules/authenticAction";
-import { assessmentAlignmentRule } from "./rules/assessmentAlignment";
+import { pupilAgencyRule, pupilAgencyAbsenceRule } from "./rules/pupilAgency";
+import { systemsInquiryRule, systemsInquiryAbsenceRule } from "./rules/systemsInquiry";
+import { criticalFuturesRule, criticalFuturesAbsenceRule } from "./rules/criticalFutures";
+import { authenticActionRule, authenticActionAbsenceRule } from "./rules/authenticAction";
+import { assessmentAlignmentRule, assessmentAlignmentAbsenceRule } from "./rules/assessmentAlignment";
 import { portfolioReviewRule } from "./rules/portfolioReview";
 
+// Each "...AbsenceRule" is the structural-absence companion to the rule
+// before it: it only fires when its sibling's relevant section(s) exist but
+// contain neither the sibling's "gap" pattern nor its "already addressed"
+// pattern — i.e. there is genuinely no textual signal either way. The two
+// are mutually exclusive by construction (both require a distinct, disjoint
+// pattern combination), so a category never gets both an explicit-gap and
+// an absence finding for the same input.
 const GAP_RULES: GapRule[] = [
   pupilAgencyRule,
+  pupilAgencyAbsenceRule,
   authenticActionRule,
+  authenticActionAbsenceRule,
   assessmentAlignmentRule,
+  assessmentAlignmentAbsenceRule,
   learningOutcomesRule,
   valuesRationaleRule,
   systemsInquiryRule,
+  systemsInquiryAbsenceRule,
   criticalFuturesRule,
+  criticalFuturesAbsenceRule,
   portfolioReviewRule
 ];
 
@@ -35,6 +47,7 @@ const MAX_SUGGESTIONS = 10;
 
 const BASE_LIMITATIONS = [
   "This is a deterministic, rule-based Phase 1 prototype, not an AI reading of the document — it matches transparent patterns, not meaning.",
+  "Phase 1 analysis rules are English-only. A document in French, German or another language will not be reliably analysed — structure recognition and suggestions may be sparse, missing, or triggered only by incidental English words.",
   "GreenComp is non-prescriptive: not every competence is expected in every syllabus, and an absent score is not a deficiency.",
   "Suggestions are starting points for the teacher's own judgement, not an official or compliance verdict.",
   "Local/institutional requirements and the teacher's professional judgement always take precedence over these suggestions."

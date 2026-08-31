@@ -38,3 +38,43 @@ export const authenticActionRule: GapRule = ({ ctx }) => {
     }
   ];
 };
+
+// Structural-absence companion: the sequence/final-product sections exist,
+// but their wording matched neither a fixed/predetermined action pattern
+// nor a stakeholder/decision-route/evidence-of-effect pattern — there is no
+// describable action content here to classify either way (e.g. the unit may
+// simply not include an action stage). Reported as an absence of evidence,
+// at medium confidence, never as a confirmed gap.
+export const authenticActionAbsenceRule: GapRule = ({ ctx }) => {
+  const sequence = ctx.section("sequence");
+  const finalProduct = ctx.section("final_product");
+  const sections = [sequence, finalProduct].filter((s): s is NonNullable<typeof s> => Boolean(s));
+  if (sections.length === 0) return [];
+
+  const sequenceText = sequence?.tableRows?.map((r) => r.join(" ")).join("\n") ?? "";
+  const combined = [sequenceText, finalProduct?.text ?? ""].join("\n");
+  if (!combined.trim() || FIXED_ACTION.test(combined) || STAKEHOLDER_OR_EFFECT.test(combined)) return [];
+
+  return [
+    {
+      category: "authentic_action",
+      priority: "medium",
+      confidence: "medium",
+      location: locationLabel(sections),
+      current_excerpt: excerpt(combined),
+      observed_gap:
+        "Evidence was not found in the reviewed text for how (or whether) pupils act on their learning — no described action was found that could be checked against a decision route, stakeholder or evidence of effect.",
+      competence_ids: ["4.1", "4.2", "4.3", "3.2"],
+      suggested_wording:
+        "If pupils are meant to act on what they learn, describe that action explicitly, including who it involves beyond the class and what would show whether it made a difference.",
+      implementation_example:
+        "Add a short 'what pupils will do with this' note to the final product or last learning-sequence stage, naming any stakeholder involved and how feedback or effect will be gathered.",
+      assessment_evidence:
+        "A brief description of the action taken, who was involved, and what feedback or evidence of effect was collected.",
+      european_schools_context: getContextNote("authentic_action"),
+      rule_basis: [
+        "Rule: authentic_action (structural absence) — the sequence/final-product sections exist but matched neither fixed-action wording nor stakeholder/decision-route/evidence wording; absence of evidence is not evidence of absence."
+      ]
+    }
+  ];
+};

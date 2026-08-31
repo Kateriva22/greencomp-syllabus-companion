@@ -33,7 +33,31 @@ npm run test:watch  # re-runs tests on change
 This was verified during development with a headless Chromium session: after the first load, the
 network was fully disabled and the page was reloaded and driven through the entire review flow
 (paste text, recognise structure, run the analysis, accept/edit a suggestion) with zero
-non-origin network requests observed.
+non-origin network requests observed. `npm run build` also runs two repeatable, automated checks
+on every build (not just this one manual pass):
+
+- `npm run verify:offline-pdf` — confirms `dist/sw.js`'s precache manifest actually includes the
+  bundled `pdf.worker.min-*.mjs` (fails loudly if a future `workbox.globPatterns` change silently
+  drops it, which would otherwise only surface as "PDF opening is broken, but only offline").
+- `npm run verify:subpath` — confirms the build contains no root-absolute (`/...`) asset
+  references, which is what lets the exact same `dist/` work both at a domain root and from a
+  repository subpath (see "Hosting from a subpath" below).
+
+### Hosting from a subpath
+
+`vite.config.ts` sets `base: "./"`, so every emitted asset URL (JS/CSS, the pdf.js worker, icons,
+the manifest) resolves relative to wherever `index.html` is actually served from. The same
+`dist/` build was verified, in a headless Chromium session, to work both:
+
+- at a domain root (`npm run preview`), and
+- from a repository subpath (e.g. `https://<user>.github.io/greencomp-syllabus-companion/`, the
+  shape a GitHub Pages deployment of this repo would take) — tested by copying `dist/` under a
+  `/greencomp-syllabus-companion/` path on a plain static file server and confirming the full
+  paste → structure → review flow works with no failed requests and the service worker registers
+  with the correct subpath scope.
+
+This repo is not currently published or deployed anywhere; this only confirms the build itself is
+subpath-safe whenever publishing is decided on separately.
 
 ### Generating the sample export
 
@@ -53,7 +77,10 @@ suggestion, so the sample shows what a teacher-reviewed export actually looks li
 2. **Intake** — subject / cycle / working language, then either open a local `.txt`, `.docx` or
    text-based `.pdf` file, or paste text directly. All parsing happens in-browser
    (`src/lib/parsing/`): `mammoth` for `.docx`, `pdf.js` for `.pdf`, with a clear error for
-   scanned/image-only PDFs (detected by an unusually low character count per page).
+   scanned/image-only PDFs (detected by an unusually low character count per page). The intake
+   screen states explicitly, and the exported report's limitations always repeat, that **Phase 1
+   analysis rules are English-only** — a file can be opened or pasted in any language, but only
+   English wording is reliably recognised by the GreenComp detection rules.
 3. **Recognised structure** — shows the sections/tables the tool could identify before running
    any analysis, so the teacher can sanity-check what will be reviewed.
 4. **Results** — strengths first, then a non-judgemental GreenComp coverage overview
@@ -80,15 +107,26 @@ pattern modules — there is no AI/model call anywhere in Phase 1.
    resources, inclusion, final_product, local_adaptation, european_dimension, preparation,
    review) by matching keywords against the *heading text only* — this is what keeps the rules
    section-aware rather than simple whole-document keyword counting.
-2. `lib/analysis/rules/*.ts` — eight independent gap-detection rules, one per finding category
-   used in `test-cases/test-case-01/gold_standard.json` (`values_and_rationale`,
-   `learning_outcomes`, `pupil_agency`, `systems_inquiry`, `critical_and_futures_thinking`,
-   `authentic_action`, `assessment_alignment`, `portfolio_and_review`). Each rule inspects the
-   specific section kinds relevant to its category, matches an "absence" pattern (e.g. teacher
-   controls every choice) against an "already-addressed" pattern (e.g. pupils are given a genuine
-   choice) and only fires when the gap pattern matches **and** the addressed pattern does not —
-   so a syllabus that already does the right thing is not flagged. Every generated suggestion
-   carries a `rule_basis` string naming exactly which heuristic fired.
+2. `lib/analysis/rules/*.ts` — eight finding categories used in
+   `test-cases/test-case-01/gold_standard.json` (`values_and_rationale`, `learning_outcomes`,
+   `pupil_agency`, `systems_inquiry`, `critical_and_futures_thinking`, `authentic_action`,
+   `assessment_alignment`, `portfolio_and_review`). Each category's primary rule inspects the
+   specific section kinds relevant to it, matches a "gap" pattern (e.g. teacher controls every
+   choice) against an "already-addressed" pattern (e.g. pupils are given a genuine choice) and
+   only fires when the gap pattern matches **and** the addressed pattern does not — so a syllabus
+   that already does the right thing is not flagged.
+
+   Five of these categories (`pupil_agency`, `authentic_action`, `systems_inquiry`,
+   `critical_and_futures_thinking`, `assessment_alignment`) also have a **structural-absence
+   companion rule** (`*AbsenceRule` in the same file). It fires, at medium priority/confidence,
+   only when the relevant section(s) exist but match *neither* the gap pattern *nor* the
+   addressed pattern — i.e. the text is simply silent on the topic. The two rules in a pair are
+   mutually exclusive by construction, and the absence rule always uses "evidence was not found"
+   framing rather than asserting a confirmed problem, so the engine distinguishes "this syllabus
+   has a described gap here" from "this syllabus doesn't say enough here to tell either way."
+
+   Every generated suggestion (from either kind of rule) carries a `rule_basis` string naming
+   exactly which heuristic fired.
 3. `lib/analysis/strengths.ts` looks for positive evidence (school-connected sustainability theme,
    multilingual/inclusion support, European comparison, intention to act, group work) before any
    gap is considered, per PROJECT_BRIEF §4.3.
@@ -96,7 +134,12 @@ pattern modules — there is no AI/model call anywhere in Phase 1.
    (topic named anywhere → 1, "Emerging") and a "purposeful" pattern checked specifically inside
    the outcomes/sequence/assessment sections (present in one stage → 2, "Purposeful"; present in
    more than one stage → 3, "Embedded"). A competence with no textual evidence stays at 0 and is
-   reported as absent, not as a deficiency — consistent with GreenComp being non-prescriptive.
+   reported as absent, not as a deficiency — consistent with GreenComp being non-prescriptive. A
+   section's table rows (e.g. the learning-sequence or assessment table) count as evidence too,
+   not just its prose. Patterns are deliberately narrow where a broad match would be misleading —
+   for example, 3.2 Adaptability requires an "adapt…"/"respond to feedback"/"uncertain…" root, not
+   a bare "change", specifically so "climate change" (the single most common phrase in any
+   sustainability syllabus) is never counted as evidence of Adaptability by itself.
 5. `lib/analysis/engine.ts` collects every rule's output, ranks by priority then confidence, caps
    at 10 suggestions, assigns stable `SUG-NN` ids, and assembles the final result together with a
    base set of limitations (plus a note if no section structure could be recognised at all).
@@ -111,11 +154,41 @@ overfit pattern-match against one document.
 
 ## Automated tests
 
-`npm test` runs (Vitest + Testing Library):
+`npm test` runs (Vitest + Testing Library), 79 tests across 16 files:
 
 - `sectionSegmenter.test.ts` — heading/table recognition and the non-markdown fallback.
-- `engine.test.ts` — synthetic-document generalisation checks (rules fire and correctly don't
-  fire).
+- `htmlToStructuredText.test.ts` — the DOCX→pseudo-markdown converter preserves headings, `<ul>`
+  bullets, `<ol>` numbered items (including nested lists), manual `<br>` line breaks, and table
+  rows as distinct lines, rather than collapsing them into one run of text.
+- `docxParser.test.ts` — `parseDocx()` itself, with `mammoth.convertToHtml` mocked, including its
+  error paths (no readable text, mammoth throws).
+- `docxRoute.test.ts` — an end-to-end regression test for the review finding that a DOCX
+  numbered-list learning-outcomes section never reached the `learning_outcomes` rule: synthetic
+  mammoth-shaped HTML → `parseDocx` → `segmentDocument` → `analyzeDocument`, asserting the finding
+  is actually detected (never using the markdown Test Case 01 fixture for this).
+- `pdfParser.test.ts` — `reconstructPageText()`, the pdf.js text-item → line reconstruction logic,
+  using synthetic text items (`hasEOL`, baseline y-jumps, sub-pixel jitter, non-text marked
+  content) to prove multiple lines/headings survive instead of collapsing into one line per page.
+- `pdfRoute.test.ts` — an end-to-end regression test with a mocked `pdfjs-dist.getDocument`,
+  proving a synthetic multi-heading PDF page segments into multiple distinct recognised sections
+  (`rationale`/`outcomes`/`assessment`), plus the scanned-PDF error path.
+- `engine.test.ts` — synthetic-document generalisation checks: rules fire and correctly don't
+  fire, across varied bullet styles (`-`, `*`, `1.`, `1)`), alternate section-heading wording
+  (Aims/Methodology), the non-markdown heading fallback, and reordered table columns.
+- `absenceRules.test.ts` — each of the five structural-absence companion rules fires only when its
+  section exists but is silent, and never fires when the section is missing entirely or when
+  either the gap or the addressed pattern is present.
+- `assessmentSuppression.test.ts` — a regression test proving `assessment_alignment` is no longer
+  suppressed by a single incidental higher-order keyword; it now weighs recall-dominant criteria
+  against higher-order ones (table-based and prose-only assessment sections both covered).
+- `coverage.test.ts` — a regression test proving a bare "climate change" mention no longer counts
+  as Adaptability (3.2) evidence, while genuine adaptability wording still does.
+- `suggestionWording.test.ts` / `exportConsistency.test.ts` / `sessionStore.test.ts` — a
+  regression test suite for the review finding that an edited suggestion's wording could keep
+  showing after the teacher changed the decision away from "edited": the reducer clears
+  `edited_text` on any non-"edited" decision, and the shared `effectiveWording()` helper (used by
+  the UI, the JSON export and the printable HTML export) is proven consistent across all three
+  surfaces.
 - `testCase01.test.ts` — the required Phase 1 acceptance test. It loads
   `../test-cases/test-case-01/input_syllabus.md` and `gold_standard.json` directly and asserts
   the `minimum_pass` criteria: ≥5 of the 6 core gap categories detected, all three mandatory
@@ -126,7 +199,8 @@ overfit pattern-match against one document.
   exact prose, since the engine is deterministic pattern matching rather than a reproduction of
   the gold text.
 - `SuggestionCard.test.tsx` / `App.test.tsx` — the Accept/Edit/Reject controls actually update
-  session state, and a full paste → structure → review flow renders end-to-end.
+  session state (including the edit → accept/reject wording-reversion regression case above), and
+  a full paste → structure → review flow renders end-to-end, including the English-only notice.
 
 ## Privacy / data-flow note
 
@@ -170,25 +244,32 @@ unreachable here because no `cMapUrl`/`standardFontDataUrl`/`url` is ever config
 
 | Dependency | Why it's needed |
 |---|---|
-| `react`, `react-dom` | UI framework specified by PROJECT_BRIEF. |
-| `mammoth` | The only actively-maintained, browser-compatible library for extracting structured text (headings, tables) from `.docx` files client-side, as suggested by PROJECT_BRIEF §2. |
-| `pdfjs-dist` | Mozilla's PDF.js, the standard browser-compatible library for extracting a text layer from `.pdf` files client-side, as suggested by PROJECT_BRIEF §2. |
-| `vite`, `@vitejs/plugin-react`, `typescript` | Build tooling specified by PROJECT_BRIEF. |
-| `vite-plugin-pwa` | Generates the web app manifest and a Workbox service worker (precache-only, no runtime network routes) for the required PWA/offline support. |
-| `vitest`, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, `jsdom` | Test runner and component-testing utilities specified by PROJECT_BRIEF. |
+| `react` 18, `react-dom` 18 | UI framework specified by PROJECT_BRIEF. |
+| `mammoth` | The only actively-maintained, browser-compatible library for extracting structured text (headings, lists, tables) from `.docx` files client-side, as suggested by PROJECT_BRIEF §2. |
+| `pdfjs-dist` | Mozilla's PDF.js, the standard browser-compatible library for extracting a text layer (with per-item position/line data) from `.pdf` files client-side, as suggested by PROJECT_BRIEF §2. |
+| `vite` 7, `@vitejs/plugin-react` 5, `typescript` | Build tooling specified by PROJECT_BRIEF. |
+| `vite-plugin-pwa` 1.x | Generates the web app manifest and a Workbox service worker (precache-only, no runtime network routes) for the required PWA/offline support. |
+| `vitest` 3.2.x, `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom`, `jsdom` | Test runner and component-testing utilities specified by PROJECT_BRIEF. |
 
 No UI component library, analytics SDK, telemetry SDK, remote font, or AI/LLM SDK is used, per
 `../SECURITY_AND_PRIVACY.md`.
 
-`npm audit` currently reports vulnerabilities in `esbuild`/`vite`'s **development server** only
-(a dev-server request-forgery class of issue, see the advisory linked in the audit output). These
-do not affect the production build in `dist/`, which contains no dev-server code; they were left
-unpatched rather than force-upgrading to an unreleased-at-time-of-writing major `vite`/`vitest`
-line that would need its own compatibility verification. Re-run `npm audit` before any real
-deployment.
+`npm audit` (both the full dev+prod audit and `npm audit --omit=dev`) reports **0 vulnerabilities**
+as of this build. `vite`, `vitest` and `vite-plugin-pwa` were upgraded from an earlier revision
+that had a moderate/high/critical dev-server-only advisory chain (`esbuild <=0.24.2`, transitively
+pulled in by `vite <=6.4.2`) — `vite` moved to 7.3.6 (the first major with a patched `esbuild`;
+there is no patched 6.x release), `vitest` to 3.2.7 (same major, patched `@vitest/mocker`/
+`vite-node`), and `vite-plugin-pwa` to 1.3.0 for `vite` 7 compatibility. `@vitejs/plugin-react` was
+bumped from 4.x to 5.2.0 as a required companion upgrade (4.x does not support `vite` 7). No other
+dependency was changed. Re-run `npm audit` before any real deployment, since this reflects the
+advisory database at the time of this build.
 
 ## Known limitations
 
+- **Phase 1 analysis rules are English-only.** A file can be opened or pasted in any language, but
+  the GreenComp detection patterns only recognise English wording. A syllabus in French, German or
+  another language will not be reliably analysed — this is stated explicitly on the intake screen
+  and repeated in every result's limitations list, not just documented here.
 - **Deterministic pattern matching, not comprehension.** The engine matches transparent regular
   expressions against section text; it does not understand meaning. Unusual phrasing that
   expresses the same idea very differently from the patterns in `src/lib/analysis/rules/` may be
@@ -200,11 +281,15 @@ deployment.
   limitation, and section-specific rules (e.g. the systems-inquiry rule, which specifically reads
   the learning-sequence table) will not have anything to check.
 - **Table extraction is markdown/DOCX-only.** `.docx` tables are converted from Word's own table
-  markup, and pasted/`.txt` tables are read as `|`-delimited markdown tables. Tables inside a
-  `.pdf` are not specially recognised — PDF text extraction returns plain per-page text, so a
-  suggestion that depends on a specific table row (e.g. the learning-sequence or assessment
-  table) may not fire for a PDF-only input even if the same content would be recognised from a
-  `.docx` or pasted-markdown version of the same syllabus.
+  markup, and pasted/`.txt` tables are read as `|`-delimited markdown tables. PDF extraction now
+  preserves line boundaries (using pdf.js's per-item position and `hasEOL` data — see
+  `reconstructPageText()` in `pdfParser.ts`), so headings and list items in a PDF are recognised
+  just like in plain text, but tables are still not specially reconstructed: pdf.js returns
+  positioned text runs, not table structure, so a suggestion that depends on a specific table row
+  (e.g. the learning-sequence or assessment table) may not fire for a PDF-only input even if the
+  same content would be recognised from a `.docx` or pasted-markdown version of the same syllabus.
+  This is an accepted Phase 1 limitation, not a bug to fix silently — reliable table reconstruction
+  from raw PDF positions is a materially harder problem than line reconstruction.
 - **Scanned/image-only PDFs are out of scope**, per PROJECT_BRIEF §11 (no OCR). The parser detects
   this heuristically (very low extracted-character count per page) and returns a clear error
   asking the teacher to paste the text instead; a PDF with an unusually sparse but genuine text

@@ -41,3 +41,41 @@ export const systemsInquiryRule: GapRule = ({ ctx }) => {
     }
   ];
 };
+
+// Structural-absence companion: the learning-sequence section exists and
+// has content, but it matches neither the isolated-observation/checklist
+// pattern nor any causes/actors/systems pattern anywhere — there simply is
+// no describable inquiry activity here to classify. Reported as an absence
+// of evidence, at medium confidence, never as a confirmed gap.
+export const systemsInquiryAbsenceRule: GapRule = ({ ctx }) => {
+  const section = ctx.section("sequence");
+  if (!section) return [];
+
+  const rowText = section.tableRows?.map((r) => r.join(" ")).join("\n") ?? "";
+  const combined = [rowText, section.text].join("\n");
+  if (!combined.trim()) return [];
+  if (ISOLATED_OBSERVATION.test(combined) || CAUSES_ACTORS.test(combined)) return [];
+
+  return [
+    {
+      category: "systems_inquiry",
+      priority: "medium",
+      confidence: "medium",
+      location: section.heading,
+      current_excerpt: excerpt(combined),
+      observed_gap:
+        "Evidence was not found in the reviewed text for systems inquiry — no activity was found that could be checked for attention to causes, actors, rules or consequences.",
+      competence_ids: ["1.2", "1.3", "2.1", "2.3"],
+      suggested_wording:
+        "If pupils investigate a real situation in this unit, name what they look at and add a prompt connecting it to causes, actors or consequences.",
+      implementation_example:
+        "Add one investigation step to the learning sequence (even brief) and ask pupils to note one cause and one consequence they observe.",
+      assessment_evidence:
+        "A short note from pupils naming one cause and one consequence related to the topic investigated.",
+      european_schools_context: getContextNote("systems_inquiry"),
+      rule_basis: [
+        "Rule: systems_inquiry (structural absence) — the learning-sequence section exists but matched neither isolated-observation wording nor causes/actors/systems wording; absence of evidence is not evidence of absence."
+      ]
+    }
+  ];
+};

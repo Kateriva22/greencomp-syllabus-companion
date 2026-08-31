@@ -93,8 +93,20 @@ export default function IntakeForm() {
             onChange={(e) => setLanguage(e.target.value)}
             placeholder="e.g. English"
           />
+          <span className="helper-text">
+            Recorded for your own reference only — it does not change how the text below is
+            analysed.
+          </span>
         </div>
       </div>
+
+      <p className="helper-text" role="note">
+        <strong>Phase 1 analysis rules are English-only.</strong> The tool can open a file or
+        accept pasted text in any language, but the GreenComp detection rules only recognise
+        English wording. A syllabus in French, German or another language will not be reliably
+        analysed — structure recognition and suggestions may be sparse, missing, or based on
+        English words that happen to appear in the text.
+      </p>
 
       <h2>2. Open a local file or paste the text</h2>
       <p className="helper-text">

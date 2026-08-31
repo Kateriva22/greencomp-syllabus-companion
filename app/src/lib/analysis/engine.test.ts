@@ -97,4 +97,125 @@ describe("analyzeDocument — generalisation beyond Test Case 01", () => {
     expect(result.suggestions.length).toBeLessThanOrEqual(10);
     expect(result.suggestions.every((s) => s.teacher_decision === "pending")).toBe(true);
   });
+
+  it("detects learning_outcomes from a numbered list, not only markdown dashes", () => {
+    const text = [
+      "## 3. Learning outcomes",
+      "1. identify common materials",
+      "2. describe energy use at school",
+      "3. name examples from other schools",
+      "4. record findings from research"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "learning_outcomes")).toBe(true);
+  });
+
+  it("detects learning_outcomes from '*' bullets mixed with '1)' numbering", () => {
+    const text = [
+      "## 3. Learning outcomes",
+      "* identify common materials",
+      "* describe energy use at school",
+      "1) name examples from other schools",
+      "2) record findings from research"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "learning_outcomes")).toBe(true);
+  });
+
+  it("does not flag learning_outcomes when higher-order verbs are genuinely balanced against recall verbs", () => {
+    const text = [
+      "## 3. Learning outcomes",
+      "- identify common materials",
+      "- describe energy use",
+      "- evaluate two possible actions and justify a choice",
+      "- reflect on their own contribution"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "learning_outcomes")).toBe(false);
+  });
+
+  it("recognises section kinds under alternate heading wording (Aims / Methodology)", () => {
+    const text = [
+      "## Aims",
+      "Pupils will learn simple ways to help the environment.",
+      "## Methodology",
+      "The teacher will select the topic and pupils will follow the task instructions."
+    ].join("\n");
+    const sections = segmentDocument(text);
+    expect(sections.some((s) => s.kind === "objectives")).toBe(true);
+    expect(sections.some((s) => s.kind === "pedagogy")).toBe(true);
+
+    const result = analyzeDocument({
+      sections,
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "pupil_agency")).toBe(true);
+  });
+
+  it("still classifies sections and fires rules when headings use the non-markdown fallback style", () => {
+    // No leading "#" at all — simulates text extracted from a source that
+    // lost markdown formatting entirely (plain .txt paste, for instance).
+    const text = [
+      "5. Pedagogical approach",
+      "",
+      "The teacher will select the topic and pupils will follow the task instructions.",
+      "",
+      "7. Assessment",
+      "",
+      "Graded on attention, task completion and neatness."
+    ].join("\n");
+    const sections = segmentDocument(text);
+    expect(sections.some((s) => s.kind === "pedagogy")).toBe(true);
+    expect(sections.some((s) => s.kind === "assessment")).toBe(true);
+
+    const result = analyzeDocument({
+      sections,
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "pupil_agency")).toBe(true);
+    expect(result.suggestions.some((s) => s.category === "assessment_alignment")).toBe(true);
+  });
+
+  it("recognises a learning-sequence table regardless of column order/naming", () => {
+    const text = [
+      "## 6. Six-week learning sequence",
+      "| Output | Learning activities | Focus | Week |",
+      "|---|---|---|---|",
+      "| Checklist | Use a checklist to observe lights and taps in the classroom. | Energy | 3 |"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "systems_inquiry")).toBe(true);
+  });
+
+  it("detects pupil_agency gaps phrased with different synonyms for teacher control", () => {
+    const text = [
+      "## 5. Pedagogical approach",
+      "The teacher will determine the research questions and pupils will follow the task instructions closely."
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.suggestions.some((s) => s.category === "pupil_agency")).toBe(true);
+  });
+
+  it("always discloses that Phase 1 analysis rules are English-only", () => {
+    const result = analyzeDocument({
+      sections: segmentDocument("## 1. Rationale\nA short unit."),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    expect(result.limitations.some((l) => /english-only/i.test(l))).toBe(true);
+  });
 });

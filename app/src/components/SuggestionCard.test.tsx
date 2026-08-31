@@ -83,4 +83,35 @@ describe("SuggestionCard", () => {
     expect(screen.getByText("Status: edited")).toBeInTheDocument();
     expect(screen.getByText("My own wording.")).toBeInTheDocument();
   });
+
+  it("reverts to the original suggested wording if Accept is clicked after an edit was saved", async () => {
+    // Regression: editing then changing the decision away from "edited"
+    // must not leave the abandoned draft displayed under the new status.
+    renderCard();
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await userEvent.clear(screen.getByLabelText(/Edit suggested wording/));
+    await userEvent.type(screen.getByLabelText(/Edit suggested wording/), "My own wording.");
+    await userEvent.click(screen.getByRole("button", { name: "Save edit" }));
+    expect(screen.getByText("My own wording.")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Accept" }));
+
+    expect(screen.getByText("Status: accepted")).toBeInTheDocument();
+    expect(screen.queryByText("My own wording.")).not.toBeInTheDocument();
+    expect(screen.getByText("Give pupils a bounded choice.")).toBeInTheDocument();
+  });
+
+  it("starts a fresh edit from the original wording after a prior edit was abandoned via Reject", async () => {
+    renderCard();
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    await userEvent.clear(screen.getByLabelText(/Edit suggested wording/));
+    await userEvent.type(screen.getByLabelText(/Edit suggested wording/), "First draft.");
+    await userEvent.click(screen.getByRole("button", { name: "Save edit" }));
+
+    await userEvent.click(screen.getByRole("button", { name: "Reject" }));
+    expect(screen.getByText("Status: rejected")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Edit" }));
+    expect(screen.getByLabelText(/Edit suggested wording/)).toHaveValue("Give pupils a bounded choice.");
+  });
 });

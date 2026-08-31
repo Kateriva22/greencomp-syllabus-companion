@@ -1,6 +1,7 @@
 import type { ReviewResult } from "../../types/domain";
 import { getCompetence, SCORE_LABELS } from "../../data/greencomp";
 import { downloadFile } from "./jsonExport";
+import { effectiveWording } from "../suggestionWording";
 
 function esc(text: string): string {
   return text
@@ -38,7 +39,7 @@ export function toPrintableHtml(result: ReviewResult): string {
         <p><strong>Current wording:</strong> “${esc(s.current_excerpt)}”</p>
         <p><strong>Observed gap:</strong> ${esc(s.observed_gap)}</p>
         <p><strong>Related GreenComp competences:</strong> ${s.competence_ids.map(esc).join(", ")}</p>
-        <p><strong>Suggested wording:</strong> ${esc(s.teacher_decision === "edited" && s.edited_text ? s.edited_text : s.suggested_wording)}</p>
+        <p><strong>Suggested wording:</strong> ${esc(effectiveWording(s))}</p>
         <p><strong>Implementation example:</strong> ${esc(s.implementation_example)}</p>
         <p><strong>Assessment evidence:</strong> ${esc(s.assessment_evidence)}</p>
         ${s.european_schools_context ? `<p><strong>European Schools context:</strong> ${esc(s.european_schools_context)}</p>` : ""}
