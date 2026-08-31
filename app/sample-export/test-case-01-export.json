@@ -1,0 +1,290 @@
+{
+  "document": {
+    "title": "Our Sustainable School: Small Actions, Big Difference",
+    "subject": "European Hours",
+    "cycle": "P4-P5",
+    "source_type": "txt"
+  },
+  "strengths": [
+    {
+      "location": "1. Rationale & 4. Core content",
+      "evidence": "Explicit sustainability theme connected to school life",
+      "reason": "Provides a relevant, concrete starting point for pupils rather than an abstract topic."
+    },
+    {
+      "location": "9. Inclusion and multilingual support",
+      "evidence": "Key vocabulary will be introduced with images and may be translated into pupils’ language sections. Mixed-ability groups, sentence starters and teacher-selected roles will support…",
+      "reason": "Supports multilingual and inclusive participation, a design condition for European Schools education."
+    },
+    {
+      "location": "4. Core content & 12. European dimension",
+      "evidence": "The unit should include examples from at least three European countries. Where possible, pupils should compare school routines and learn key environmental vocabulary used by classm…",
+      "reason": "Supports intercultural learning and comparison across the European Schools' multicultural context."
+    },
+    {
+      "location": "6. Six-week learning sequence & 10. Expected final product",
+      "evidence": "Intention to connect learning with practical action",
+      "reason": "Can be developed into an authentic action cycle rather than discarded."
+    },
+    {
+      "location": "5. Pedagogical approach & 6. Six-week learning sequence",
+      "evidence": "Teaching will combine short teacher presentations, videos, worksheets, guided internet research, group discussion and poster making. The teacher will select the environmental probl…",
+      "reason": "Group work offers a collaborative starting point that can grow into genuine collective decision-making."
+    }
+  ],
+  "coverage": [
+    {
+      "competence_id": "1.1",
+      "score": 1,
+      "evidence": "- Understand why protecting the environment is important."
+    },
+    {
+      "competence_id": "1.2",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "1.3",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "2.1",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "2.2",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "2.3",
+      "score": 1,
+      "evidence": "Teaching will combine short teacher presentations, videos, worksheets, guided internet research, group discussion and poster making. The teacher will select the environmental probl…"
+    },
+    {
+      "competence_id": "3.1",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "3.2",
+      "score": 1,
+      "evidence": "Pupils encounter messages about climate change, waste and responsible behaviour in their daily lives. This unit introduces practical environmental actions that can be taken at scho…"
+    },
+    {
+      "competence_id": "3.3",
+      "score": 1,
+      "evidence": "The unit should include examples from at least three European countries. Where possible, pupils should compare school routines and learn key environmental vocabulary used by classm…"
+    },
+    {
+      "competence_id": "4.1",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "4.2",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    },
+    {
+      "competence_id": "4.3",
+      "score": 0,
+      "evidence": "Evidence was not found in the reviewed text."
+    }
+  ],
+  "suggestions": [
+    {
+      "category": "pupil_agency",
+      "priority": "critical",
+      "confidence": "high",
+      "location": "5. Pedagogical approach & 9. Inclusion and multilingual support & 13. Teacher preparation checklist",
+      "current_excerpt": "Teaching will combine short teacher presentations, videos, worksheets, guided internet research, group discussion and poster making. The teacher will select the environmental probl…",
+      "observed_gap": "The teacher selects the problem, sources, roles and actions; pupils are described as following instructions. No wording gives pupils a genuine choice within the task.",
+      "competence_ids": [
+        "2.3",
+        "3.3",
+        "4.2",
+        "4.3"
+      ],
+      "suggested_wording": "Keep the teacher-set safety and learning boundaries, and add pupil choice over one or more of: the exact question to investigate, their group role, which evidence to use, or which option to propose.",
+      "implementation_example": "Offer a short menu of two or three teacher-vetted options at one decision point (e.g., which local example to research, or which of two actions to propose) so pupils choose rather than receive. Offer bounded pupil choice within a clear, teacher-set structure, and use sentence starters for reasoning.",
+      "assessment_evidence": "A record of the choice each pupil or group made and a one-line reason for it (e.g., in a research log or portfolio entry).",
+      "european_schools_context": "European Schools syllabi are harmonised at system level, but local implementation may give pupils bounded choices within teacher-set boundaries without breaching that harmonisation.",
+      "rule_basis": [
+        "Rule: pupil_agency — matched teacher-controls-the-task phrasing (selects/assigns/provides) without matching any pupil-choice phrasing (choose/decide/propose/vote) in the pedagogy, inclusion or preparation sections."
+      ],
+      "id": "SUG-01",
+      "teacher_decision": "accepted"
+    },
+    {
+      "category": "authentic_action",
+      "priority": "critical",
+      "confidence": "high",
+      "location": "6. Six-week learning sequence & 10. Expected final product",
+      "current_excerpt": "Week Focus Learning activities Output 1 What is sustainability? Teacher slideshow, key vocabulary and a short whole-class quiz. Completed vocabulary sheet 2 Waste and recycling Sor…",
+      "observed_gap": "The action (clean-up, poster display) is predetermined and fixed. It is not linked to a decision route, a stakeholder, evidence of effect, or any adaptation based on feedback.",
+      "competence_ids": [
+        "4.1",
+        "4.2",
+        "4.3",
+        "3.2"
+      ],
+      "suggested_wording": "Keep the clean-up and poster if useful, and add one authentic step: pupils present their evidence-based proposal to a real stakeholder (e.g., the class teacher responsible for a resource, the school council or a caretaker), agree a small feasible pilot, then gather before/after feedback or evidence.",
+      "implementation_example": "Before the clean-up, have groups pitch their 'ten things' proposal to a real audience (school council representative, another class, or a staff member) and note one piece of feedback each group receives and acts on.",
+      "assessment_evidence": "A short record of the stakeholder's feedback and how (or whether) the group adjusted their plan, plus any before/after evidence collected (photo, count, short survey).",
+      "european_schools_context": "A whole-school connection should be made only when it is educationally relevant and age-appropriate; this is a suggested local link, not an added European Schools requirement.",
+      "rule_basis": [
+        "Rule: authentic_action — matched fixed/predetermined action wording (clean-up, unchanged poster format) without matching stakeholder, decision-route or before/after-evidence wording."
+      ],
+      "id": "SUG-02",
+      "teacher_decision": "edited",
+      "edited_text": "Teacher-edited: keep the clean-up, and add a short pitch to the school council before it happens."
+    },
+    {
+      "category": "assessment_alignment",
+      "priority": "critical",
+      "confidence": "high",
+      "location": "7. Assessment",
+      "current_excerpt": "Component | Weight | Main criteria Participation | 20% | Attention, task completion and cooperation Knowledge quiz | 30% | Correct use of vocabulary and factual accuracy Poster and…",
+      "observed_gap": "Assessment criteria reward attention, recall, cooperation, neatness and presentation. No criterion rewards GreenComp reasoning: inquiry, evidence use, weighing alternatives, collective action or reflection.",
+      "competence_ids": [
+        "2.1",
+        "2.2",
+        "3.2",
+        "4.2"
+      ],
+      "suggested_wording": "Keep the quiz formative (not weighted), and assess: the quality of the group's inquiry/systems thinking, their use of evidence and perspectives, how they weighed alternatives, and their reflection on collective action.",
+      "implementation_example": "Replace or reweight the poster/presentation criteria to include: 'uses evidence and at least one source check', 'shows a group decision among options', and 'reflects on what worked and what would change next time'.",
+      "assessment_evidence": "A simple rubric or checklist covering inquiry quality, evidence use, decision-making and reflection, applied to the group's portfolio or presentation.",
+      "european_schools_context": "Assessment should remain competence-based and evidence-observable, in line with the public context pack's support for competence-based learning and assessment; this does not replace any official assessment regulation.",
+      "rule_basis": [
+        "Rule: assessment_alignment — assessment criteria matched recall/compliance/neatness wording without matching any inquiry, evidence, alternatives, decision, reflection or collective-action wording."
+      ],
+      "id": "SUG-03",
+      "teacher_decision": "pending"
+    },
+    {
+      "category": "learning_outcomes",
+      "priority": "critical",
+      "confidence": "high",
+      "location": "3. Learning outcomes",
+      "current_excerpt": "identify common recyclable and non-recyclable materials;; describe at least three ways to save energy or water at school;; name examples of environmental actions used by European s…",
+      "observed_gap": "Outcomes mainly measure recall and task completion (identify, describe, name, record). No outcome asks pupils to frame a problem, evaluate evidence, weigh options or reflect.",
+      "competence_ids": [
+        "2.1",
+        "2.2",
+        "2.3",
+        "4.3"
+      ],
+      "suggested_wording": "Add outcomes such as: frame a school sustainability question in their own words; judge whether a source or example is trustworthy and relevant; compare at least two possible actions using simple criteria; reflect on what they contributed.",
+      "implementation_example": "Keep the factual outcomes as a foundation, and add one outcome per higher-order skill (framing, judging evidence, comparing options, reflecting) so each is visible and teachable, not assumed.",
+      "assessment_evidence": "A short written or spoken response for each added outcome (a question the pupil framed, a judgement about a source, a choice between two options with a reason, a reflection sentence).",
+      "european_schools_context": "Outcomes remain the subject's own; this suggestion only makes existing GreenComp-relevant reasoning observable.",
+      "rule_basis": [
+        "Rule: learning_outcomes — 4 recall/task-completion outcome(s) found and 0 outcomes used a higher-order verb (evaluate, compare, propose, decide, justify, design, reflect, frame)."
+      ],
+      "id": "SUG-04",
+      "teacher_decision": "pending"
+    },
+    {
+      "category": "values_and_rationale",
+      "priority": "high",
+      "confidence": "medium",
+      "location": "1. Rationale & 2. General objectives",
+      "current_excerpt": "Pupils encounter messages about climate change, waste and responsible behaviour in their daily lives. This unit introduces practical environmental actions that can be taken at scho…",
+      "observed_gap": "Sustainability is framed mainly as awareness and prescribed individual behaviour. Connected impacts, fairness questions and the human-nature relationship were not found in this wording.",
+      "competence_ids": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "2.1"
+      ],
+      "suggested_wording": "Reframe the rationale around a real, local sustainability challenge: what is happening, who and what is affected, and why it matters — before moving to any individual action.",
+      "implementation_example": "Open with a short local example (a school data snapshot, a walkabout or a news item) and ask pupils what is happening and who is affected. Offer bounded pupil choice within a clear, teacher-set structure, and use sentence starters for reasoning.",
+      "assessment_evidence": "A brief pupil reflection (written, drawn or spoken) that names at least one cause-effect relationship and one value at stake (fairness, care for nature).",
+      "european_schools_context": "Naming values and fairness questions is compatible with competence-based learning; it does not assert a school position on a contested issue.",
+      "rule_basis": [
+        "Rule: values_and_rationale — matched generic awareness/behaviour phrasing without matching systemic, fairness or nature-relationship vocabulary in the rationale/objectives sections."
+      ],
+      "id": "SUG-05",
+      "teacher_decision": "pending"
+    },
+    {
+      "category": "systems_inquiry",
+      "priority": "high",
+      "confidence": "medium",
+      "location": "6. Six-week learning sequence (Week 3)",
+      "current_excerpt": "3 — Energy and water — Use a teacher-provided checklist to observe lights, taps and classroom equipment. — Classroom checklist",
+      "observed_gap": "The observation activity records isolated objects (lights, taps, equipment) but does not ask pupils to look at causes, actors, rules, natural resources or consequences behind what they observe.",
+      "competence_ids": [
+        "1.2",
+        "1.3",
+        "2.1",
+        "2.3"
+      ],
+      "suggested_wording": "Extend the checklist into a short baseline data collection, then ask pupils to sketch a simple systems map: what/who causes the pattern observed, and what it affects.",
+      "implementation_example": "After the checklist, ask each group to add one sticky note per item answering 'why is this happening?' and 'who or what does it affect?', then group the notes into a simple cause-and-effect map.",
+      "assessment_evidence": "The completed systems map or cause-effect diagram, plus a one-sentence revised problem statement written by the group.",
+      "european_schools_context": "Contextualising an inquiry at school or class level is supported by the public context pack; it does not add a system-wide obligation.",
+      "rule_basis": [
+        "Rule: systems_inquiry — a learning-sequence row matched isolated-observation/checklist wording without matching causes, actors, rules, resources or consequences wording in the same row."
+      ],
+      "id": "SUG-06",
+      "teacher_decision": "pending"
+    },
+    {
+      "category": "critical_and_futures_thinking",
+      "priority": "high",
+      "confidence": "medium",
+      "location": "6. Six-week learning sequence & 12. European dimension",
+      "current_excerpt": "4 — European examples — In groups, search selected websites for one school or city initiative and record facts. — Research notes",
+      "observed_gap": "European examples are recorded as facts. No wording asks pupils to judge sources, notice missing perspectives, imagine future scenarios, or compare options.",
+      "competence_ids": [
+        "1.2",
+        "2.2",
+        "3.1",
+        "3.3"
+      ],
+      "suggested_wording": "After recording facts, ask pupils one evaluative question (is this source reliable? whose viewpoint is missing?) and one futures question (what might this look like in 10 years, or what else could be tried?).",
+      "implementation_example": "Add a short 'source check' box to the research notes template (who wrote this, when, is it reliable?) and a 'what if' prompt asking pupils to sketch one alternative future or option.",
+      "assessment_evidence": "Completed source-check notes and a one or two sentence future-scenario or alternative-option response per group.",
+      "european_schools_context": "Comparing European examples fits the harmonised, multicultural character of European Schools education; sources and perspectives remain the teacher's professional judgement to select.",
+      "rule_basis": [
+        "Rule: critical_and_futures_thinking — matched 'record facts' research wording without matching source-evaluation or futures/scenario wording in the learning-sequence or European-dimension sections."
+      ],
+      "id": "SUG-07",
+      "teacher_decision": "pending"
+    },
+    {
+      "category": "portfolio_and_review",
+      "priority": "medium",
+      "confidence": "medium",
+      "location": "10. Expected final product & 11. Local adaptation & 12. European dimension & 13. Teacher preparation checklist & 14. Review after the unit",
+      "current_excerpt": "After the final presentation, the teacher will record which activities engaged pupils, whether the planned outputs were completed and which resources should be changed before the u…",
+      "observed_gap": "A single fixed product hides the pupils' process, and the end-of-unit review is described as teacher-only. Pupils are not asked to review their own learning or process.",
+      "competence_ids": [
+        "1.2",
+        "3.2",
+        "4.2",
+        "4.3"
+      ],
+      "suggested_wording": "Keep the poster and presentation as the public output, and add a lightweight portfolio (photos, notes, source checks, group decisions) reviewed jointly by pupils and teacher at the end of the unit.",
+      "implementation_example": "Add a one-page portfolio cover sheet pupils fill in themselves (what we found, what we decided, what we would do differently) and use it in a short joint review conversation with the teacher.",
+      "assessment_evidence": "The completed portfolio cover sheet and brief notes from the joint pupil-teacher review conversation.",
+      "european_schools_context": "A shared review with pupils fits multilingual, inclusive participation as a design condition, without changing official assessment weighting.",
+      "rule_basis": [
+        "Rule: portfolio_and_review — matched teacher-only review wording or a fixed single-product description without matching any pupil self-review or joint-review wording."
+      ],
+      "id": "SUG-08",
+      "teacher_decision": "pending"
+    }
+  ],
+  "limitations": [
+    "This is a deterministic, rule-based Phase 1 prototype, not an AI reading of the document — it matches transparent patterns, not meaning.",
+    "GreenComp is non-prescriptive: not every competence is expected in every syllabus, and an absent score is not a deficiency.",
+    "Suggestions are starting points for the teacher's own judgement, not an official or compliance verdict.",
+    "Local/institutional requirements and the teacher's professional judgement always take precedence over these suggestions."
+  ]
+}

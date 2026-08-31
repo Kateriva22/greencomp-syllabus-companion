@@ -1,0 +1,51 @@
+import type { GapRule } from "../types";
+import { excerpt } from "../context";
+import { getContextNote } from "../../../data/contextPack";
+
+const BULLET = /^[-*]\s+(.*)$/;
+const LOW_ORDER_VERB = /^(identify|describe|name|list|record|search|find|state|recall)\b/i;
+const HIGH_ORDER_VERB = /(evaluate|compare|propose|decide|justify|design|reflect|frame|question|debate|argue|adapt)/i;
+
+function bulletLines(text: string): string[] {
+  return text
+    .split("\n")
+    .map((l) => l.trim())
+    .map((l) => BULLET.exec(l)?.[1])
+    .filter((l): l is string => Boolean(l));
+}
+
+export const learningOutcomesRule: GapRule = ({ ctx }) => {
+  const section = ctx.section("outcomes");
+  if (!section) return [];
+
+  const bullets = bulletLines(section.text);
+  if (bullets.length === 0) return [];
+
+  const lowOrderCount = bullets.filter((b) => LOW_ORDER_VERB.test(b)).length;
+  const highOrderCount = bullets.filter((b) => HIGH_ORDER_VERB.test(b)).length;
+
+  if (highOrderCount > 0 || lowOrderCount < 2) return [];
+
+  return [
+    {
+      category: "learning_outcomes",
+      priority: "critical",
+      confidence: "high",
+      location: section.heading,
+      current_excerpt: excerpt(bullets.slice(0, 3).join("; ")),
+      observed_gap:
+        "Outcomes mainly measure recall and task completion (identify, describe, name, record). No outcome asks pupils to frame a problem, evaluate evidence, weigh options or reflect.",
+      competence_ids: ["2.1", "2.2", "2.3", "4.3"],
+      suggested_wording:
+        "Add outcomes such as: frame a school sustainability question in their own words; judge whether a source or example is trustworthy and relevant; compare at least two possible actions using simple criteria; reflect on what they contributed.",
+      implementation_example:
+        "Keep the factual outcomes as a foundation, and add one outcome per higher-order skill (framing, judging evidence, comparing options, reflecting) so each is visible and teachable, not assumed.",
+      assessment_evidence:
+        "A short written or spoken response for each added outcome (a question the pupil framed, a judgement about a source, a choice between two options with a reason, a reflection sentence).",
+      european_schools_context: getContextNote("learning_outcomes"),
+      rule_basis: [
+        `Rule: learning_outcomes — ${lowOrderCount} recall/task-completion outcome(s) found and 0 outcomes used a higher-order verb (evaluate, compare, propose, decide, justify, design, reflect, frame).`
+      ]
+    }
+  ];
+};
