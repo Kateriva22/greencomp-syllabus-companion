@@ -1,0 +1,6 @@
+Read CLAUDE.md and every file it lists. Then implement Phase 1 of the GreenComp Syllabus Companion inside a new app/ directory.
+
+Before coding, give me a concise requirements summary and proposed file plan. Then continue with implementation without asking broad product questions. Do not create a backend, authentication, database, analytics, telemetry, remote AI integration or runtime network request. All document parsing and analysis must happen locally in the browser.
+
+Use the synthetic Test Case 01 and its gold_standard.json as the acceptance fixture. Run the automated tests, build the production app, verify the offline/privacy constraints, and stop with a completion report. Do not implement Phase 2.
+
