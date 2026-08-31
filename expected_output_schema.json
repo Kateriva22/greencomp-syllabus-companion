@@ -1,0 +1,66 @@
+{
+  "title": "GreenComp syllabus review result",
+  "type": "object",
+  "required": ["document", "strengths", "coverage", "suggestions", "limitations"],
+  "properties": {
+    "document": {
+      "type": "object",
+      "required": ["title", "subject", "cycle"],
+      "properties": {
+        "title": {"type": "string"},
+        "subject": {"type": "string"},
+        "cycle": {"type": "string"},
+        "source_type": {"type": "string"}
+      }
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["location", "evidence", "reason"],
+        "properties": {
+          "location": {"type": "string"},
+          "evidence": {"type": "string"},
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["competence_id", "score", "evidence"],
+        "properties": {
+          "competence_id": {"type": "string"},
+          "score": {"type": "integer", "minimum": 0, "maximum": 3},
+          "evidence": {"type": "string"}
+        }
+      }
+    },
+    "suggestions": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["id", "category", "priority", "confidence", "location", "current_excerpt", "observed_gap", "competence_ids", "suggested_wording", "implementation_example", "assessment_evidence", "rule_basis"],
+        "properties": {
+          "id": {"type": "string"},
+          "category": {"type": "string"},
+          "priority": {"enum": ["critical", "high", "medium", "low"]},
+          "confidence": {"enum": ["high", "medium", "low"]},
+          "location": {"type": "string"},
+          "current_excerpt": {"type": "string"},
+          "observed_gap": {"type": "string"},
+          "competence_ids": {"type": "array", "items": {"type": "string"}, "maxItems": 4},
+          "suggested_wording": {"type": "string"},
+          "implementation_example": {"type": "string"},
+          "assessment_evidence": {"type": "string"},
+          "european_schools_context": {"type": "string"},
+          "rule_basis": {"type": "array", "items": {"type": "string"}},
+          "teacher_decision": {"enum": ["pending", "accepted", "edited", "rejected"]}
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}}
+  }
+}
