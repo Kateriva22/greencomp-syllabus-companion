@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Restrictive CSP: everything (scripts, styles, connections, workers,
+      fonts, images) is restricted to the app's own origin. There is no
+      allowance for any remote host, so the browser itself blocks a
+      runtime fetch/XHR/WebSocket/beacon to a third party even if one were
+      ever introduced by mistake. (frame-ancestors/X-Frame-Options can only
+      be enforced via an HTTP response header, not this <meta> tag, so a
+      static-hosting deployment should also set that header at the server —
+      it is not a Phase 1 in-browser guarantee.)
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'; child-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';"
+    />
+    <meta
+      name="description"
+      content="Offline reflective companion for reviewing a syllabus against GreenComp. Files never leave your device."
+    />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon-192.svg" />
+    <title>GreenComp Syllabus Companion</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

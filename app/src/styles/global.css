@@ -1,0 +1,256 @@
+:root {
+  --color-bg: #f4f7f4;
+  --color-surface: #ffffff;
+  --color-border: #cbd6c8;
+  --color-text: #1c2a1e;
+  --color-muted: #46543f;
+  --color-primary: #2f5233;
+  --color-primary-contrast: #ffffff;
+  --color-accent: #a8d5a2;
+  --color-critical: #8a3324;
+  --color-high: #a15c1f;
+  --color-medium: #4d6a92;
+  --color-low: #5a6b57;
+  --focus-ring: 3px solid #1a73e8;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+button {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 3rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.app-header h1 {
+  font-size: 1.15rem;
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button.secondary {
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.button.danger {
+  background: var(--color-surface);
+  color: var(--color-critical);
+  border-color: var(--color-critical);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.privacy-banner {
+  background: #eef4ec;
+  border: 1px solid var(--color-accent);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font: inherit;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.field textarea {
+  min-height: 220px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.section-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+details {
+  margin-top: 1rem;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-muted);
+  padding: 0.3rem 0;
+}
+
+details .section-list {
+  margin-top: 0.5rem;
+}
+
+.section-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.priority-critical {
+  color: var(--color-critical);
+}
+.priority-high {
+  color: var(--color-high);
+}
+.priority-medium {
+  color: var(--color-medium);
+}
+.priority-low {
+  color: var(--color-low);
+}
+
+.suggestion-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.suggestion-card dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  margin: 0.75rem 0;
+}
+
+.suggestion-card dt {
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.suggestion-card dd {
+  margin: 0;
+}
+
+.decision-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.decision-status {
+  font-weight: 600;
+}
+
+.coverage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.coverage-table th,
+.coverage-table td {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.helper-text {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.two-col {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 720px) {
+  .two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}
