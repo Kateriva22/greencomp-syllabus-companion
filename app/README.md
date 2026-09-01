@@ -82,7 +82,10 @@ suggestion, so the sample shows what a teacher-reviewed export actually looks li
    analysis rules are English-only** — a file can be opened or pasted in any language, but only
    English wording is reliably recognised by the GreenComp detection rules.
 3. **Recognised structure** — shows the sections/tables the tool could identify before running
-   any analysis, so the teacher can sanity-check what will be reviewed.
+   any analysis, so the teacher can sanity-check what will be reviewed. Recognised sections are
+   listed immediately; unclassified sections sit inside a collapsed details element showing only
+   their count, so a long document (typically PDF-extracted, where many stray lines can each
+   become their own unclassified section) doesn't dump hundreds of items into view up front.
 4. **Results** — strengths first, then a non-judgemental GreenComp coverage overview
    (Not yet observed / Emerging / Purposeful / Embedded — no traffic-light verdict), then
    prioritised, section-anchored suggestion cards, then limitations, then export.
@@ -106,7 +109,12 @@ pattern modules — there is no AI/model call anywhere in Phase 1.
    into a `SectionKind` (rationale, objectives, outcomes, content, pedagogy, sequence, assessment,
    resources, inclusion, final_product, local_adaptation, european_dimension, preparation,
    review) by matching keywords against the *heading text only* — this is what keeps the rules
-   section-aware rather than simple whole-document keyword counting.
+   section-aware rather than simple whole-document keyword counting. When several sections share a
+   kind (e.g. a table-of-contents entry and the real section both matching "assessment"), rules
+   that need "the" section of a kind (`RuleContext.section(kind)`) get the most substantive match
+   by content size (prose plus table cells), not simply the first one in the document — this
+   matters most for long, PDF-extracted documents where a TOC line can otherwise out-rank the real
+   section it refers to.
 2. `lib/analysis/rules/*.ts` — eight finding categories used in
    `test-cases/test-case-01/gold_standard.json` (`values_and_rationale`, `learning_outcomes`,
    `pupil_agency`, `systems_inquiry`, `critical_and_futures_thinking`, `authentic_action`,
@@ -126,7 +134,13 @@ pattern modules — there is no AI/model call anywhere in Phase 1.
    has a described gap here" from "this syllabus doesn't say enough here to tell either way."
 
    Every generated suggestion (from either kind of rule) carries a `rule_basis` string naming
-   exactly which heuristic fired.
+   exactly which heuristic fired. Both kinds of finding are careful never to overclaim: a
+   suggestion that fires because recall-dominant evidence outnumbers higher-order evidence says
+   so with the actual counts (e.g. "3 of 4 criteria… against only 1…"), never "no criterion
+   rewards…" when one demonstrably does; and an absence-rule finding says a *specific* signal
+   (e.g. "a stakeholder, decision route, feedback or effect") was not found, never that no
+   activity/action/research exists at all — the section may describe one in wording the pattern
+   doesn't recognise.
 3. `lib/analysis/strengths.ts` looks for positive evidence (school-connected sustainability theme,
    multilingual/inclusion support, European comparison, intention to act, group work) before any
    gap is considered, per PROJECT_BRIEF §4.3.
@@ -154,7 +168,7 @@ overfit pattern-match against one document.
 
 ## Automated tests
 
-`npm test` runs (Vitest + Testing Library), 79 tests across 16 files:
+`npm test` runs (Vitest + Testing Library), 96 tests across 18 files:
 
 - `sectionSegmenter.test.ts` — heading/table recognition and the non-markdown fallback.
 - `htmlToStructuredText.test.ts` — the DOCX→pseudo-markdown converter preserves headings, `<ul>`
@@ -183,6 +197,11 @@ overfit pattern-match against one document.
   against higher-order ones (table-based and prose-only assessment sections both covered).
 - `coverage.test.ts` — a regression test proving a bare "climate change" mention no longer counts
   as Adaptability (3.2) evidence, while genuine adaptability wording still does.
+- `context.test.ts` — `RuleContext.section(kind)` picks the most substantive section by content
+  size when several sections share a kind (e.g. a table-of-contents entry followed by the real
+  section), rather than blindly the first match; `StructurePreview.test.tsx` — recognised sections
+  render immediately while unclassified ("other") sections sit inside a collapsed `<details>`
+  showing just their count, and expand on request.
 - `suggestionWording.test.ts` / `exportConsistency.test.ts` / `sessionStore.test.ts` — a
   regression test suite for the review finding that an edited suggestion's wording could keep
   showing after the teacher changed the decision away from "edited": the reducer clears

@@ -33,6 +33,15 @@ export const learningOutcomesRule: GapRule = ({ ctx }) => {
   // so the finding isn't suppressed by one incidental keyword.
   if (lowOrderCount < 2 || lowOrderCount <= highOrderCount * 2) return [];
 
+  // The condition above only requires recall outcomes to outnumber
+  // higher-order ones by more than 2:1 — it does not require zero
+  // higher-order outcomes. observed_gap must reflect whichever is actually
+  // true, never assert "no outcome does X" when the counts show otherwise.
+  const observedGap =
+    highOrderCount === 0
+      ? `Outcomes mainly measure recall and task completion (identify, describe, name, record — ${lowOrderCount} of ${bullets.length}). No outcome asks pupils to frame a problem, evaluate evidence, weigh options or reflect.`
+      : `Higher-order outcomes are underrepresented: only ${highOrderCount} of ${bullets.length} outcomes ask pupils to frame a problem, evaluate evidence, weigh options or reflect, against ${lowOrderCount} that mainly measure recall and task completion.`;
+
   return [
     {
       category: "learning_outcomes",
@@ -40,8 +49,7 @@ export const learningOutcomesRule: GapRule = ({ ctx }) => {
       confidence: "high",
       location: section.heading,
       current_excerpt: excerpt(bullets.slice(0, 3).join("; ")),
-      observed_gap:
-        "Outcomes mainly measure recall and task completion (identify, describe, name, record). No outcome asks pupils to frame a problem, evaluate evidence, weigh options or reflect.",
+      observed_gap: observedGap,
       competence_ids: ["2.1", "2.2", "2.3", "4.3"],
       suggested_wording:
         "Add outcomes such as: frame a school sustainability question in their own words; judge whether a source or example is trustworthy and relevant; compare at least two possible actions using simple criteria; reflect on what they contributed.",

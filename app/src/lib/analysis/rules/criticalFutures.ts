@@ -44,10 +44,12 @@ export const criticalFuturesRule: GapRule = ({ ctx }) => {
 
 // Structural-absence companion: the learning-sequence/European-dimension
 // sections exist and have content, but match neither "record facts"
-// research wording nor source-evaluation/futures wording — there is no
-// describable research or futures activity here to classify either way.
-// Reported as an absence of evidence, at medium confidence, never as a
-// confirmed gap.
+// research wording nor source-evaluation/futures wording. This does NOT
+// mean no research exists — the text may describe it using wording this
+// rule doesn't recognise (e.g. "research sources"). It only means the
+// specific source-evaluation/perspectives/alternatives/futures signal was
+// not found. Reported as an absence of evidence for that signal, at medium
+// confidence, never as a claim that no research exists.
 export const criticalFuturesAbsenceRule: GapRule = ({ ctx }) => {
   const sequence = ctx.section("sequence");
   const european = ctx.section("european_dimension");
@@ -67,7 +69,7 @@ export const criticalFuturesAbsenceRule: GapRule = ({ ctx }) => {
       location: locationLabel(sections),
       current_excerpt: excerpt(combined),
       observed_gap:
-        "Evidence was not found in the reviewed text for critical or futures thinking — no research or comparison activity was found that could be checked for source evaluation or futures/scenario thinking.",
+        "Evidence of source evaluation, missing perspectives, alternatives or futures thinking was not found in the reviewed text — this wording alone does not confirm whether any research or comparison activity here engages critical or futures thinking or not.",
       competence_ids: ["1.2", "2.2", "3.1", "3.3"],
       suggested_wording:
         "If pupils research or compare examples in this unit, add a prompt asking them to judge a source or consider an alternative/future option.",
@@ -77,7 +79,7 @@ export const criticalFuturesAbsenceRule: GapRule = ({ ctx }) => {
         "A short pupil response to the added evaluative or futures question.",
       european_schools_context: getContextNote("critical_and_futures_thinking"),
       rule_basis: [
-        "Rule: critical_and_futures_thinking (structural absence) — the learning-sequence/European-dimension sections exist but matched neither 'record facts' wording nor source-evaluation/futures wording; absence of evidence is not evidence of absence."
+        "Rule: critical_and_futures_thinking (structural absence) — the learning-sequence/European-dimension sections exist but matched neither 'record facts' wording nor source-evaluation/futures wording; this reports that the specific signal was not found, not that no research exists."
       ]
     }
   ];

@@ -44,9 +44,12 @@ export const systemsInquiryRule: GapRule = ({ ctx }) => {
 
 // Structural-absence companion: the learning-sequence section exists and
 // has content, but it matches neither the isolated-observation/checklist
-// pattern nor any causes/actors/systems pattern anywhere — there simply is
-// no describable inquiry activity here to classify. Reported as an absence
-// of evidence, at medium confidence, never as a confirmed gap.
+// pattern nor any causes/actors/systems pattern anywhere. This does NOT
+// mean no inquiry activity exists — the text may describe one using
+// wording this rule doesn't recognise (e.g. "investigate a local issue").
+// It only means the specific causes/actors/relationships/consequences
+// signal was not found. Reported as an absence of evidence for that
+// signal, at medium confidence, never as a claim that no activity exists.
 export const systemsInquiryAbsenceRule: GapRule = ({ ctx }) => {
   const section = ctx.section("sequence");
   if (!section) return [];
@@ -64,7 +67,7 @@ export const systemsInquiryAbsenceRule: GapRule = ({ ctx }) => {
       location: section.heading,
       current_excerpt: excerpt(combined),
       observed_gap:
-        "Evidence was not found in the reviewed text for systems inquiry — no activity was found that could be checked for attention to causes, actors, rules or consequences.",
+        "Evidence of causes, actors, relationships or consequences was not found in the reviewed text — this wording alone does not confirm whether the learning sequence connects what pupils observe to a wider system or not.",
       competence_ids: ["1.2", "1.3", "2.1", "2.3"],
       suggested_wording:
         "If pupils investigate a real situation in this unit, name what they look at and add a prompt connecting it to causes, actors or consequences.",
@@ -74,7 +77,7 @@ export const systemsInquiryAbsenceRule: GapRule = ({ ctx }) => {
         "A short note from pupils naming one cause and one consequence related to the topic investigated.",
       european_schools_context: getContextNote("systems_inquiry"),
       rule_basis: [
-        "Rule: systems_inquiry (structural absence) — the learning-sequence section exists but matched neither isolated-observation wording nor causes/actors/systems wording; absence of evidence is not evidence of absence."
+        "Rule: systems_inquiry (structural absence) — the learning-sequence section exists but matched neither isolated-observation wording nor causes/actors/systems wording; this reports that the specific signal was not found, not that no inquiry activity exists."
       ]
     }
   ];

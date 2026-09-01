@@ -41,6 +41,15 @@ export const assessmentAlignmentRule: GapRule = ({ ctx }) => {
 
   const flaggedUnits = units.filter((u) => RECALL_OR_COMPLIANCE.test(u));
 
+  // The condition above only requires recall criteria to outnumber
+  // higher-order ones — it does not require zero higher-order criteria.
+  // observed_gap must say what the counts actually show, never assert "no
+  // criterion rewards X" when higherOrderCount could be > 0.
+  const observedGap =
+    higherOrderCount === 0
+      ? `Assessment criteria reward attention, recall, cooperation, neatness and presentation (${recallCount} of ${units.length} criteria). No criterion rewards GreenComp reasoning: inquiry, evidence use, weighing alternatives, collective action or reflection.`
+      : `Recall/compliance criteria dominate: ${recallCount} of ${units.length} criteria reward attention, recall, cooperation, neatness or presentation, against only ${higherOrderCount} rewarding GreenComp reasoning (inquiry, evidence use, alternatives, collective action or reflection).`;
+
   return [
     {
       category: "assessment_alignment",
@@ -48,8 +57,7 @@ export const assessmentAlignmentRule: GapRule = ({ ctx }) => {
       confidence: "high",
       location: section.heading,
       current_excerpt: excerpt(flaggedUnits.join(" — ")),
-      observed_gap:
-        "Assessment criteria reward attention, recall, cooperation, neatness and presentation. No criterion rewards GreenComp reasoning: inquiry, evidence use, weighing alternatives, collective action or reflection.",
+      observed_gap: observedGap,
       competence_ids: ["2.1", "2.2", "3.2", "4.2"],
       suggested_wording:
         "Keep the quiz formative (not weighted), and assess: the quality of the group's inquiry/systems thinking, their use of evidence and perspectives, how they weighed alternatives, and their reflection on collective action.",

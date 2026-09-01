@@ -143,6 +143,44 @@ describe("analyzeDocument — generalisation beyond Test Case 01", () => {
     expect(result.suggestions.some((s) => s.category === "learning_outcomes")).toBe(false);
   });
 
+  it("reports underrepresentation (not absence) when one higher-order outcome exists among many recall ones", () => {
+    const text = [
+      "## 3. Learning outcomes",
+      "- identify common materials",
+      "- describe energy use at school",
+      "- name examples from other schools",
+      "- record findings from research",
+      "- reflect on their own contribution"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    const finding = result.suggestions.find((s) => s.category === "learning_outcomes");
+    expect(finding).toBeDefined();
+    // Regression: observed_gap must not claim "No outcome asks..." when one
+    // outcome genuinely does — it must say higher-order outcomes are
+    // underrepresented and report the actual counts.
+    expect(finding?.observed_gap).not.toMatch(/no outcome asks/i);
+    expect(finding?.observed_gap).toMatch(/underrepresented/i);
+    expect(finding?.observed_gap).toContain("1 of 5");
+  });
+
+  it("still uses 'no outcome asks' wording when there are genuinely zero higher-order outcomes", () => {
+    const text = [
+      "## 3. Learning outcomes",
+      "- identify common materials",
+      "- describe energy use at school",
+      "- name examples from other schools"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    const finding = result.suggestions.find((s) => s.category === "learning_outcomes");
+    expect(finding?.observed_gap).toMatch(/no outcome asks/i);
+  });
+
   it("recognises section kinds under alternate heading wording (Aims / Methodology)", () => {
     const text = [
       "## Aims",
@@ -209,6 +247,26 @@ describe("analyzeDocument — generalisation beyond Test Case 01", () => {
       document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
     });
     expect(result.suggestions.some((s) => s.category === "pupil_agency")).toBe(true);
+  });
+
+  it("uses the substantive assessment section, not an earlier near-empty table-of-contents-style match", () => {
+    // Simulates a long document (e.g. PDF-extracted) where a table of
+    // contents produces its own short heading matching the same
+    // SectionKind before the real section appears later in the document.
+    const text = [
+      "## 2. Assessment",
+      "## 7. Assessment",
+      "| Component | Weight | Main criteria |",
+      "|---|---|---|",
+      "| Poster | 100% | Neatness and correct vocabulary |"
+    ].join("\n");
+    const result = analyzeDocument({
+      sections: segmentDocument(text),
+      document: { title: "t", subject: "s", cycle: "c", source_type: "paste" }
+    });
+    // If the engine had anchored to the empty "2. Assessment" TOC entry
+    // instead of the real "7. Assessment" table, this would never fire.
+    expect(result.suggestions.some((s) => s.category === "assessment_alignment")).toBe(true);
   });
 
   it("always discloses that Phase 1 analysis rules are English-only", () => {

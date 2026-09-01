@@ -143,6 +143,21 @@ button {
   gap: 0.5rem;
 }
 
+details {
+  margin-top: 1rem;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-muted);
+  padding: 0.3rem 0;
+}
+
+details .section-list {
+  margin-top: 0.5rem;
+}
+
 .section-list li {
   display: flex;
   justify-content: space-between;

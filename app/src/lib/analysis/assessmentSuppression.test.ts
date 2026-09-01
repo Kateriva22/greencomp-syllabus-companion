@@ -30,6 +30,13 @@ describe("assessment_alignment is not suppressed by one incidental higher-order 
     const finding = run(text);
     expect(finding).toBeDefined();
     expect(finding?.priority).toBe("critical");
+    // Regression: with 1 of 4 criteria genuinely higher-order, observed_gap
+    // must not claim "no criterion rewards" GreenComp reasoning — it must
+    // say recall dominates and report the actual counts.
+    expect(finding?.observed_gap).not.toMatch(/no criterion rewards/i);
+    expect(finding?.observed_gap).toMatch(/dominate/i);
+    expect(finding?.observed_gap).toContain("3 of 4");
+    expect(finding?.observed_gap).toContain("only 1");
   });
 
   it("does not fire once higher-order criteria are genuinely balanced or dominant", () => {
@@ -54,6 +61,18 @@ describe("assessment_alignment is not suppressed by one incidental higher-order 
     ].join("\n");
     const finding = run(text);
     expect(finding).toBeUndefined();
+  });
+
+  it("still uses 'no criterion rewards' wording when there are genuinely zero higher-order criteria", () => {
+    const text = [
+      "## 7. Assessment",
+      "| Component | Weight | Main criteria |",
+      "|---|---|---|",
+      "| Participation | 50% | Attention and task completion |",
+      "| Quiz | 50% | Correct use of vocabulary and factual accuracy |"
+    ].join("\n");
+    const finding = run(text);
+    expect(finding?.observed_gap).toMatch(/no criterion rewards/i);
   });
 
   it("works the same way for a prose-only assessment section (no table)", () => {

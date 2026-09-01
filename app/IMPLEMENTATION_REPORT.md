@@ -1,5 +1,56 @@
 # Phase 1 implementation report — GreenComp Syllabus Companion
 
+## Third review round — accuracy/UX correction
+
+A second human review passed the technical, privacy, build, offline, subpath and security checks
+and asked for one final accuracy/UX correction, in three parts. All three were fixed on the same
+branch; nothing was merged or deployed.
+
+1. **Over-absolute finding language.** `learningOutcomesRule` and `assessmentAlignmentRule` can
+   fire once recall/compliance items merely *outnumber* higher-order ones by more than 2:1 (see
+   the review-response round below) — they no longer require zero higher-order evidence. Their
+   `observed_gap` text still said "No outcome asks…" / "No criterion rewards…" regardless, which
+   was factually wrong whenever the rule fired with 1+ higher-order items present. Both now branch
+   on the actual counts: the "no X" wording is used only when the higher-order count is genuinely
+   zero, and an "underrepresented"/"dominate" wording naming the exact counts (e.g. "only 1 of 5
+   outcomes…", "3 of 4 criteria… against only 1…") is used otherwise. Added regression tests
+   asserting both branches, including the exact counts.
+2. **Over-absolute structural-absence wording.** `authenticActionAbsenceRule`,
+   `systemsInquiryAbsenceRule` and `criticalFuturesAbsenceRule` said things like "no described
+   action was found" / "no activity was found" / "no research or comparison activity was found"
+   when a section matched neither their gap pattern nor their addressed pattern. This overclaims:
+   the section may well describe an action/inquiry/research activity in wording the patterns
+   simply don't recognise (e.g. "run a campaign", "investigate a local issue", "research
+   sources"). Reworded all three to say evidence *of a specific signal* (stakeholder/decision
+   route/feedback/effect; causes/actors/relationships/consequences; source
+   evaluation/perspectives/alternatives/futures) was not found, never that no activity exists.
+   Added synthetic paraphrase tests using exactly the wording above, asserting the finding still
+   fires (since the specific signal is genuinely absent) but with wording that doesn't deny the
+   activity itself, and that the described activity remains visible in `current_excerpt`.
+3. **Long-document structure display and section selection.** `StructurePreview` listed every
+   recognised *and* unclassified ("other") section in one flat list — for a long PDF where the
+   non-markdown fallback heuristic can turn many stray lines into their own "other" sections, this
+   meant hundreds of items rendered immediately. Unclassified sections now sit inside a collapsed
+   `<details>` showing just their count, while recognised sections remain immediately visible.
+   Separately — and more substantively — `RuleContext.section(kind)` (used by most rules to find
+   "the" outcomes/assessment/sequence/etc. section) previously used `Array.find()`, silently
+   taking the *first* section of a given kind. In a long document this can be a table-of-contents
+   entry ("2. Assessment" with no real content) appearing before the actual section ("7.
+   Assessment" with the real table) — every rule reading that kind would then anchor to the empty
+   TOC stand-in and never see the real content. Fixed `section()` to pick the most substantive
+   match by content size (prose + flattened table cells) when several sections share a kind, with
+   document order as a deterministic tie-break. Added a direct unit test on `buildRuleContext`
+   (`context.test.ts`) and an end-to-end `engine.test.ts` case proving `assessment_alignment` now
+   fires correctly against a document with exactly this TOC-collision shape — both tests were
+   confirmed to fail under the old first-match behaviour before the fix, and pass after.
+
+**Final verification for this round**: `npx tsc --noEmit` — clean. `npm test` — **96 tests passing
+across 18 files** (up from 79/16 in the previous round). `npm run build` (typecheck + bundle +
+`verify:offline-pdf` + `verify:subpath`) — clean. `npm audit` and `npm audit --omit=dev` — **0
+vulnerabilities** (unchanged). Offline behaviour and subpath hosting were both re-verified in a
+headless Chromium session against this exact build, with zero non-origin/failed requests observed
+in either case. Nothing was merged, deployed, or published.
+
 ## Review-response round — 8 blockers fixed
 
 A human review of the initial Phase 1 PR found 8 blockers. All 8 were fixed on the same branch;
@@ -247,8 +298,8 @@ trade-off for an app that precaches its whole shell once but was not optimised f
 
 ## Stopping point
 
-Phase 1, including the review-response round above, is complete per the criteria stated: `npm
-test` (79/79), `npm run build` (typecheck + bundle + offline-PDF-precache check + subpath check),
+Phase 1, including both review rounds above, is complete per the criteria stated: `npm
+test` (96/96), `npm run build` (typecheck + bundle + offline-PDF-precache check + subpath check),
 `npm audit`/`npm audit --omit=dev` (0/0), and the offline/subpath browser verification all pass,
 and the required deliverables (source, tests including Test Case 01, README with
 install/run/build/offline/subpath instructions, privacy/data-flow note, dependency rationale,

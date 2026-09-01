@@ -22,6 +22,13 @@ const KIND_LABEL: Record<string, string> = {
 export default function StructurePreview() {
   const { state, dispatch } = useSession();
   const sections = state.sections ?? [];
+  // "other" sections are shown separately, collapsed, so a long document
+  // (typically PDF-extracted, where every stray line can become its own
+  // fallback-heading "section") doesn't dump hundreds of unclassified
+  // items into the main list before the teacher can even see what was
+  // actually recognised.
+  const recognised = sections.filter((s) => s.kind !== "other");
+  const unclassified = sections.filter((s) => s.kind === "other");
 
   function handleStartReview() {
     if (!state.sections) return;
@@ -46,14 +53,40 @@ export default function StructurePreview() {
         Review them before starting the analysis — a section that was not recognised will still be
         analysed as part of the whole document, but section-specific rules may not apply to it.
       </p>
-      <ul className="section-list">
-        {sections.map((s) => (
-          <li key={s.id}>
-            <span>{s.heading}</span>
-            <span className="badge">{KIND_LABEL[s.kind] ?? s.kind}</span>
-          </li>
-        ))}
-      </ul>
+
+      {recognised.length === 0 ? (
+        <p className="helper-text">
+          No section headings were recognised — the whole document will be analysed as a single
+          block.
+        </p>
+      ) : (
+        <ul className="section-list">
+          {recognised.map((s) => (
+            <li key={s.id}>
+              <span>{s.heading}</span>
+              <span className="badge">{KIND_LABEL[s.kind] ?? s.kind}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {unclassified.length > 0 && (
+        <details>
+          <summary>
+            {unclassified.length} unclassified section{unclassified.length === 1 ? "" : "s"} (not
+            shown by default)
+          </summary>
+          <ul className="section-list">
+            {unclassified.map((s) => (
+              <li key={s.id}>
+                <span>{s.heading}</span>
+                <span className="badge">{KIND_LABEL.other}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+
       <div className="decision-controls">
         <button
           className="button secondary"

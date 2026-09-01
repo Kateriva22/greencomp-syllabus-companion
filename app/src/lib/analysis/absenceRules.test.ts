@@ -89,6 +89,50 @@ describe("structural-absence rules", () => {
     expect(finding?.observed_gap.toLowerCase()).toContain("evidence was not found");
   });
 
+  // Regression: the absence rules must never claim "no action/inquiry/
+  // research exists" — the section may well describe one, just using
+  // wording the gap/addressed patterns don't specifically recognise. These
+  // synthetic paraphrases (deliberately different from every other fixture
+  // in this file) prove the wording stays honest about what was actually
+  // checked, and that the described activity is still visible in the
+  // current_excerpt rather than being talked over.
+  it("authentic_action: does not claim no action exists when one is described as 'run a campaign'", () => {
+    const text = "## 10. Expected final product\nPupils will run a campaign to raise awareness among younger classes.";
+    const finding = findByCategory(text, "authentic_action");
+    expect(finding).toBeDefined();
+    expect(finding?.observed_gap).not.toMatch(/no (described )?action/i);
+    expect(finding?.observed_gap).toMatch(/stakeholder, decision route, feedback or effect/i);
+    expect(finding?.current_excerpt).toContain("run a campaign");
+  });
+
+  it("systems_inquiry: does not claim no inquiry exists when pupils 'investigate a local issue'", () => {
+    const text = [
+      "## 6. Six-week learning sequence",
+      "| Week | Focus | Learning activities | Output |",
+      "|---|---|---|---|",
+      "| 2 | Local issue | Pupils investigate a local issue affecting the school. | Notes |"
+    ].join("\n");
+    const finding = findByCategory(text, "systems_inquiry");
+    expect(finding).toBeDefined();
+    expect(finding?.observed_gap).not.toMatch(/no (inquiry )?activity/i);
+    expect(finding?.observed_gap).toMatch(/causes, actors, relationships or consequences/i);
+    expect(finding?.current_excerpt).toContain("investigate a local issue");
+  });
+
+  it("critical_and_futures_thinking: does not claim no research exists when pupils 'research sources'", () => {
+    const text = [
+      "## 6. Six-week learning sequence",
+      "| Week | Focus | Learning activities | Output |",
+      "|---|---|---|---|",
+      "| 4 | Research | Pupils research sources about renewable energy in Europe. | Notes |"
+    ].join("\n");
+    const finding = findByCategory(text, "critical_and_futures_thinking");
+    expect(finding).toBeDefined();
+    expect(finding?.observed_gap).not.toMatch(/no research/i);
+    expect(finding?.observed_gap).toMatch(/source evaluation, missing perspectives, alternatives or futures/i);
+    expect(finding?.current_excerpt).toContain("research sources");
+  });
+
   it("no absence rule fires when its section is entirely absent from the document", () => {
     const text = "## 1. Rationale\nA short unit about local biodiversity.";
     const result = analyzeDocument({
