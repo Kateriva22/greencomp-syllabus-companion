@@ -1,5 +1,5 @@
 import type { GapRule } from "../types";
-import { excerpt, locationLabel } from "../context";
+import { excerpt, locationLabel, formatTableRow, firstMatchingTableRow } from "../context";
 import { getContextNote } from "../../../data/contextPack";
 
 const FIXED_ACTION = /clean-?up|displayed in the corridor|the final poster format .* should remain the same|will (join|take part in|complete) a (supervised )?(playground )?clean-?up/i;
@@ -15,13 +15,17 @@ export const authenticActionRule: GapRule = ({ ctx }) => {
   const combined = [sequenceText, finalProduct?.text ?? ""].join("\n");
   if (!FIXED_ACTION.test(combined) || STAKEHOLDER_OR_EFFECT.test(combined)) return [];
 
+  // Prefer specific table row evidence if available
+  const triggerRow = sequence?.tableRows ? firstMatchingTableRow(sequence.tableRows, FIXED_ACTION) : undefined;
+  const excerptText = triggerRow ? formatTableRow(triggerRow) : excerpt(combined);
+
   return [
     {
       category: "authentic_action",
       priority: "critical",
       confidence: "high",
       location: locationLabel(sections),
-      current_excerpt: excerpt(combined),
+      current_excerpt: excerptText,
       observed_gap:
         "The action (clean-up, poster display) is predetermined and fixed. It is not linked to a decision route, a stakeholder, evidence of effect, or any adaptation based on feedback.",
       competence_ids: ["4.1", "4.2", "4.3", "3.2"],

@@ -1,5 +1,5 @@
 import type { GapRule } from "../types";
-import { excerpt, locationLabel } from "../context";
+import { excerpt, locationLabel, formatTableRow, firstMatchingTableRow } from "../context";
 import { getContextNote } from "../../../data/contextPack";
 
 const RECORD_FACTS = /record(ed)? (relevant )?facts|note (down )?facts|search .* record|search selected websites/i;
@@ -11,12 +11,17 @@ export const criticalFuturesRule: GapRule = ({ ctx }) => {
   const sections = [sequence, european].filter((s): s is NonNullable<typeof s> => Boolean(s));
   if (sections.length === 0) return [];
 
+  // Check if the sequence describes research/fact-gathering
   const sequenceText = sequence?.tableRows?.map((r) => r.join(" ")).join("\n") ?? "";
-  const combined = [sequenceText, european?.text ?? ""].join("\n");
+  const europeanText = european?.text ?? "";
+  const combined = [sequenceText, europeanText].join("\n");
+  
+  // Gate: only fire if we found "record facts" pattern AND no "critical or futures" pattern
   if (!RECORD_FACTS.test(combined) || CRITICAL_OR_FUTURES.test(combined)) return [];
 
-  const triggerRow = sequence?.tableRows?.find((r) => RECORD_FACTS.test(r.join(" ")));
-  const excerptText = triggerRow ? triggerRow.join(" — ") : combined;
+  // Prefer the most substantive matching table row if available, otherwise use combined text
+  const triggerRow = sequence?.tableRows ? firstMatchingTableRow(sequence.tableRows, RECORD_FACTS) : undefined;
+  const excerptText = triggerRow ? formatTableRow(triggerRow) : excerpt(combined);
 
   return [
     {
@@ -24,7 +29,7 @@ export const criticalFuturesRule: GapRule = ({ ctx }) => {
       priority: "high",
       confidence: "medium",
       location: locationLabel(sections),
-      current_excerpt: excerpt(excerptText),
+      current_excerpt: excerptText,
       observed_gap:
         "European examples are recorded as facts. No wording asks pupils to judge sources, notice missing perspectives, imagine future scenarios, or compare options.",
       competence_ids: ["1.2", "2.2", "3.1", "3.3"],

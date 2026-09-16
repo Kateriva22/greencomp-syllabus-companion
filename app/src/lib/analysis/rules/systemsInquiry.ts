@@ -1,5 +1,5 @@
 import type { GapRule } from "../types";
-import { excerpt } from "../context";
+import { excerpt, formatTableRow } from "../context";
 import { getContextNote } from "../../../data/contextPack";
 
 const ISOLATED_OBSERVATION = /checklist|observe (lights|taps|equipment|the classroom)|observation checklist/i;
@@ -10,8 +10,10 @@ export const systemsInquiryRule: GapRule = ({ ctx }) => {
   if (!section?.tableRows || section.tableRows.length < 2) return [];
 
   const [, ...rows] = section.tableRows;
+  
+  // Find rows that describe isolated observation without systems/causes/actors
   const flaggedRow = rows.find((row) => {
-    const rowText = row.join(" | ");
+    const rowText = row.join(" ");
     return ISOLATED_OBSERVATION.test(rowText) && !CAUSES_ACTORS.test(rowText);
   });
   if (!flaggedRow) return [];
@@ -24,7 +26,7 @@ export const systemsInquiryRule: GapRule = ({ ctx }) => {
       priority: "high",
       confidence: "medium",
       location: `${section.heading} (${weekLabel})`,
-      current_excerpt: excerpt(flaggedRow.join(" — ")),
+      current_excerpt: formatTableRow(flaggedRow),
       observed_gap:
         "The observation activity records isolated objects (lights, taps, equipment) but does not ask pupils to look at causes, actors, rules, natural resources or consequences behind what they observe.",
       competence_ids: ["1.2", "1.3", "2.1", "2.3"],

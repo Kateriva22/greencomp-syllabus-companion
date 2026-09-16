@@ -3,8 +3,15 @@ import { excerpt, firstMatchingLine, locationLabel } from "../context";
 import { getContextNote } from "../../../data/contextPack";
 import { getCycleAdaptation } from "../../../data/ageAdaptations";
 
+// Patterns that indicate awareness/behaviour focus without systems/fairness understanding
 const GENERIC_AWARENESS = /raise awareness|greener choices|responsible behaviour|protecting the environment is important|make (a )?differen/i;
+
+// Patterns indicating systemic, justice-oriented or relational framing
 const SYSTEMIC_FRAMING = /fairness|justice|equit|ecosystem|biodiversity|interdependen|systems? (relationship|thinking)|cause and effect|who is affected|winners and losers/i;
+
+// Patterns that indicate institutional/generic mission statements (low confidence evidence)
+// These phrases are common in boilerplate introductions and don't indicate specific learning
+const INSTITUTIONAL_BOILERPLATE = /^(Pupils? encounter|This unit|It aims to|This course)/i;
 
 export const valuesRationaleRule: GapRule = ({ ctx, cycle }) => {
   const sections = ctx.sectionsOf(["rationale", "objectives"]);
@@ -13,14 +20,20 @@ export const valuesRationaleRule: GapRule = ({ ctx, cycle }) => {
   const combined = sections.map((s) => s.text).join("\n");
   if (!GENERIC_AWARENESS.test(combined) || SYSTEMIC_FRAMING.test(combined)) return [];
 
+  // Prefer specific outcome lines over institutional boilerplate
   const triggerLine = firstMatchingLine(combined, GENERIC_AWARENESS) ?? combined;
+  
+  // Confidence reduced if the evidence is generic institutional language
+  const isBoilerplate = INSTITUTIONAL_BOILERPLATE.test(triggerLine);
+  const confidence = isBoilerplate ? ("low" as const) : ("medium" as const);
+
   const adaptation = getCycleAdaptation(cycle ?? "");
 
   return [
     {
       category: "values_and_rationale",
       priority: "high",
-      confidence: "medium",
+      confidence,
       location: locationLabel(sections),
       current_excerpt: excerpt(triggerLine),
       observed_gap:
