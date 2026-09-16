@@ -1,4 +1,4 @@
-import type { DocumentSection, SectionKind } from "../../types/domain";
+import type { Confidence, DocumentSection, SectionKind } from "../../types/domain";
 
 export interface RuleContext {
   sections: DocumentSection[];
@@ -93,6 +93,34 @@ export function firstMatchingLine(text: string, pattern: RegExp): string | undef
   });
 
   return scored.sort((a, b) => b.score - a.score)[0]?.line;
+}
+
+/**
+ * Adjust a confidence level based on the content type of the section where
+ * the evidence was found. Institutional/boilerplate content reduces confidence,
+ * while specific outcomes/assessments maintain or increase it.
+ *
+ * This is applied automatically by rules that extract evidence from specific
+ * sections (e.g., a rule that finds evidence in the "outcomes" section can
+ * auto-apply the outcome-type multiplier).
+ *
+ * Example usage:
+ *   const types = detectSectionContentTypes(section.text);
+ *   const multiplier = confidenceMultiplier(types);
+ *   const adjustedConfidence = adjustConfidenceByContentType("high", multiplier);
+ */
+export function adjustConfidenceByContentType(
+  baseConfidence: Confidence,
+  multiplier: number
+): Confidence {
+  const confidenceValues = { high: 3, medium: 2, low: 1 };
+  const baseScore = confidenceValues[baseConfidence];
+  const adjustedScore = Math.round(baseScore * multiplier);
+
+  // Clamp to valid range and convert back to Confidence type
+  const clamped = Math.max(1, Math.min(3, adjustedScore));
+  const confidenceMap: Record<number, Confidence> = { 1: "low", 2: "medium", 3: "high" };
+  return confidenceMap[clamped];
 }
 
 export function locationLabel(sections: DocumentSection[]): string {

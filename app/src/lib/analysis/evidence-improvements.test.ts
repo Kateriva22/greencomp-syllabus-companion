@@ -97,10 +97,6 @@ describe("Evidence Selection Improvements", () => {
 
   describe("Integration: Real syllabus examples", () => {
     it("correctly identifies pupil-level research and futures thinking even with paraphrasing", () => {
-      const learningSequence =
-        "| Week | Focus | Activities |\n" +
-        "| 4 | Investigation | Pupils gather data about water usage and ask: what might this look like in 10 years? |\n" +
-        "| 5 | Decision | Groups compare three possible solutions and choose one to propose |";
       const sections = [
         "Week 4: Investigation. Pupils gather data about water usage and ask: what might this look like in 10 years?",
         "Week 5: Decision. Groups compare three possible solutions and choose one to propose"

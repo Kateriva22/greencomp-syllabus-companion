@@ -61,7 +61,24 @@ export interface DocumentSection {
   text: string;
   tableRows?: string[][];
   startLine: number;
+  
+  // Provenance tracking (Phase 3-4 enhancements)
+  pageNumber?: number;  // For PDFs/DOCX with page metadata
+  contentTypes?: ContentType[]; // Flags for institutional vs outcome vs activity vs assessment
+  paragraphBoundaries?: number[]; // Character indices of paragraph breaks within text
 }
+
+/**
+ * Content-type flags for section text.
+ * Multiple flags can apply to one section (e.g., pedagogy section may have both
+ * "activity" and "assessment" content in different paragraphs).
+ */
+export type ContentType =
+  | "institutional" // Mission statement, values, generic opening (low confidence)
+  | "outcome" // Intended learning outcome (high confidence)
+  | "activity" // Suggested activity/task the teacher/pupils do (medium confidence)
+  | "assessment" // Assessment criterion or rubric (high confidence)
+  | "mixed"; // Mixed content types in same section
 
 export type SectionKind =
   | "rationale"

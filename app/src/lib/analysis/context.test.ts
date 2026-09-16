@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRuleContext, excerpt, firstMatchingLine, formatTableRow, firstMatchingTableRow } from "./context";
+import { buildRuleContext, excerpt, firstMatchingLine, formatTableRow, firstMatchingTableRow, adjustConfidenceByContentType } from "./context";
 import type { DocumentSection } from "../../types/domain";
 
 function section(overrides: Partial<DocumentSection>): DocumentSection {
@@ -166,5 +166,35 @@ describe("firstMatchingTableRow", () => {
     const rows = [["Week 1", "intro"]];
     const result = firstMatchingTableRow(rows, /nonexistent/);
     expect(result).toBeUndefined();
+  });
+});
+
+describe("adjustConfidenceByContentType", () => {
+  it("maintains high confidence with 1.0 multiplier (normal outcome content)", () => {
+    expect(adjustConfidenceByContentType("high", 1.0)).toBe("high");
+    expect(adjustConfidenceByContentType("medium", 1.0)).toBe("medium");
+    expect(adjustConfidenceByContentType("low", 1.0)).toBe("low");
+  });
+
+  it("reduces confidence with low multiplier (institutional content)", () => {
+    expect(adjustConfidenceByContentType("high", 0.3)).toBe("low");
+    expect(adjustConfidenceByContentType("medium", 0.3)).toBe("low");
+  });
+
+  it("moderately reduces confidence with 0.7 multiplier (activity content)", () => {
+    expect(adjustConfidenceByContentType("high", 0.7)).toBe("medium");
+    expect(adjustConfidenceByContentType("medium", 0.7)).toBe("low");
+  });
+
+  it("clamps adjusted confidence to valid range", () => {
+    // Can't go below "low"
+    expect(adjustConfidenceByContentType("low", 0.1)).toBe("low");
+    // Can't go above "high"
+    expect(adjustConfidenceByContentType("high", 2.0)).toBe("high");
+  });
+
+  it("handles mixed content (0.6 multiplier)", () => {
+    expect(adjustConfidenceByContentType("high", 0.6)).toBe("medium");
+    expect(adjustConfidenceByContentType("medium", 0.6)).toBe("low");
   });
 });
